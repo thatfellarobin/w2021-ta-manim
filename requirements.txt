@@ -1,3 +1,4 @@
+astroid==2.4.2
 cairocffi==1.2.0
 cffi==1.14.4
 colorama==0.4.4
@@ -5,6 +6,8 @@ colour==0.1.5
 commonmark==0.9.1
 decorator==4.4.2
 flake8==3.8.4
+isort==5.7.0
+lazy-object-proxy==1.4.3
 manim==0.2.0
 manimce==0.1.1
 manimpango==0.1.4
@@ -14,7 +17,6 @@ numpy==1.19.4
 pangocairocffi==0.4.0
 pangocffi==0.8.0
 Pillow==8.0.1
-pkg-resources==0.0.0
 progressbar==2.5
 pycairo==1.20.0
 pycodestyle==2.6.0
@@ -22,7 +24,11 @@ pycparser==2.20
 pydub==0.24.1
 pyflakes==2.2.0
 Pygments==2.7.3
+pylint==2.6.0
 rich==6.2.0
 scipy==1.5.4
+six==1.15.0
+toml==0.10.2
 tqdm==4.54.1
 typing-extensions==3.7.4.3
+wrapt==1.12.1
