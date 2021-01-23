@@ -37,10 +37,15 @@ class AccPrimer(Scene):
             color=BLUE
         )
 
-        # Text
+        # Text and annotations
         title = Tex('\\textbf{Particle velocity and centripetal accelerations}').shift(3*UP)
-        vel_label = MathTex('v(t)', color=BLUE).shift(4*RIGHT + 0.5*UP)
-        acc_label = MathTex('a_c(t)', color=RED).shift(4*RIGHT + 0.5*DOWN)
+        vel_label = MathTex('v(t)', color=BLUE).shift(4.25*LEFT + 0.5*UP)
+        acc_label = MathTex('a_c(t)', '=', '\\frac{v^2}{\\rho}', color=RED).align_to(vel_label, LEFT).shift(0.5*DOWN)
+        equation_explain = Tex('$\\rho$ is the', '\\textit{instantaneous}', 'path radius').shift(5.5*RIGHT + 0.25*UP).scale(0.9)
+        equation_explain[1].set_color(YELLOW).shift(0.1*RIGHT)
+        equation_explain[2].shift(0.5*DOWN).align_to(equation_explain[0], LEFT)
+        rho = MathTex('\\rho').shift(0.4*RIGHT + 0.8*DOWN)
+        rho_arrow = DoubleArrow(start=ORIGIN, end=[1.5/2**0.5, -1.5/2**0.5, 0], color=GREEN, buff=0.1, stroke_width = 3, max_tip_length_to_length_ratio=0.15)
 
         # Updater functions
         def update_vel(vel, dt):
@@ -79,13 +84,23 @@ class AccPrimer(Scene):
         acc_vector.add_updater(update_acc)
 
         # Run animations
-        self.add(title, origin, path, acc_vector, vel_vector, particle, vel_label, acc_label)
+        self.add(title, origin, path, acc_vector, vel_vector, particle, vel_label, acc_label[0])
         self.wait(0.5)
         self.play(Rotating(particle, radians=0.8*TAU, about_point=ORIGIN, rate_func=smooth),  run_time=5)
         self.wait(0.1)
-        self.play(Rotating(particle, radians=-0.3*TAU, about_point=ORIGIN, rate_func=smooth), run_time=3)
+        self.play(Rotating(particle, radians=-0.55*TAU, about_point=ORIGIN, rate_func=smooth), run_time=3)
         self.wait(0.1)
-        self.play(Rotating(particle, radians=1*TAU, about_point=ORIGIN, rate_func=smooth), run_time=7)
+        self.play(
+            Rotating(particle, radians=1*TAU, about_point=ORIGIN, rate_func=smooth, run_time=6),
+            Write(acc_label[1:])
+        )
         self.wait(0.1)
-        self.play(Rotating(particle, radians=-0.5*TAU, about_point=ORIGIN, rate_func=smooth), run_time=3)
+        self.play(
+            Rotating(particle, radians=-0.5*TAU, about_point=ORIGIN, rate_func=smooth, run_time=3),
+            Write(equation_explain),
+            Write(rho),
+            ShowCreation(rho_arrow)
+        )
+        self.wait(0.1)
+        self.play(Rotating(particle, radians=1.1*TAU, about_point=ORIGIN, rate_func=smooth), run_time=5)
         self.wait()
