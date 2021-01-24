@@ -1,6 +1,6 @@
 from manim import *
 import numpy as np
-import cv2
+from cv2 import cv2
 
 
 class RHR(Scene):
@@ -11,17 +11,23 @@ class RHR(Scene):
 
         text = Tex('How do we describe a', 'rotation as a vector?')
         text[1].next_to(text[0], direction=DOWN, aligned_edge=LEFT).set_color(YELLOW)
-        text.shift(5 * RIGHT + 1 * UP)
+        text.shift(4 * RIGHT + 1 * UP)
 
         text2 = Tex('How do we know the resulting', 'direction of a cross product?').next_to(text, direction=DOWN, aligned_edge=LEFT)
         text2[1].next_to(text2[0], direction=DOWN, aligned_edge=LEFT).set_color(YELLOW)
         text2.shift(0.5 * DOWN)
 
-        rhr = ImageMobject('assets/rhr.png', invert=True).scale(0.25).shift(0.5*DOWN + 3*LEFT)
+        rhr_obj = ImageMobject('assets/rhr.png', invert=True).scale(0.25).shift(0.5*DOWN + 4*LEFT)
 
         self.play(Write(title))
-        self.play(FadeIn(rhr))
         self.wait()
+
+        # img not fading in nicely. Hack: fade out an obscuring rectangle.
+        rhr_mask = SurroundingRectangle(rhr_obj, color=BLACK).set_opacity(1)
+        self.add(rhr_obj, rhr_mask)
+        self.play(FadeOut(rhr_mask))
+        self.wait()
+
         self.play(Write(text))
         self.wait()
         self.play(Write(text2))
