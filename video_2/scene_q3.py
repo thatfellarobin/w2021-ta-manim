@@ -204,18 +204,46 @@ class P3(Scene):
         self.play(ShowCreationThenDestruction(angular_vel_indicate), run_time=1.5)
         self.wait()
         # equations for v_r and v_theta
-        vel_radial = MathTex('v_r=\\dot{r}=a\\dot{\\theta}=1.2\\,\\mathrm{m/s}', color=RED).scale(0.75).next_to(theta_dot, DOWN, aligned_edge=LEFT)
-        self.play(Write(vel_radial))
+        vel_radial = MathTex('v_r=\\dot{r}=a\\dot{\\theta}', '=1.2\\,\\mathrm{m/s}', color=RED).scale(0.75).next_to(theta_dot, DOWN, aligned_edge=LEFT)
+        self.play(Write(vel_radial[0]))
         self.wait()
-        vel_angular = MathTex('v_\\theta=r\\dot{\\theta}=1.5\\,\\mathrm{m/s}', color=RED).scale(0.75).next_to(vel_radial, DOWN, aligned_edge=LEFT)
-        self.play(Write(vel_angular))
+        self.play(Write(vel_radial[1]))
         self.wait()
-        vel_mag = MathTex('|\\vec{v}| = \\sqrt{v_{r}^2 + v_{\\theta}^2} = 1.92\\,\\mathrm{m/s}', color=RED).scale(0.75).next_to(vel_angular, DOWN, aligned_edge=LEFT)
+        vel_angular = MathTex('v_\\theta=r\\dot{\\theta}', '=1.5\\,\\mathrm{m/s}', color=RED).scale(0.75).next_to(vel_radial, DOWN, aligned_edge=LEFT)
+        self.play(Write(vel_angular[0]))
+        self.wait()
+        self.play(Write(vel_angular[1]))
+        self.wait()
+        vel_mag = MathTex('|\\vec{v}| = \\sqrt{v_{r}^2 + v_{\\theta}^2}', '=1.92\\,\\mathrm{m/s}', color=RED).scale(0.75).next_to(vel_angular, DOWN, aligned_edge=LEFT)
         self.play(Write(vel_mag))
         vel_answer_box = SurroundingRectangle(vel_mag, buff=.1)
         self.play(ShowCreation(vel_answer_box))
         self.wait()
 
+        # Explain acceleration calculation
+        acc_radial = MathTex(
+            'a_r', '=', '\\ddot{r}', '-', 'r\\dot{\\theta}^2', '=', '0', '-', '(0.5)3^2', '=-4.5\\,\\mathrm{m/s^2}',
+            color=BLUE
+        ).scale(0.75).next_to(vel_mag, DOWN, aligned_edge=LEFT)
+        acc_radial[5:].shift(acc_radial[1].get_center()-acc_radial[5].get_center()+0.6*DOWN)
+        self.play(Write(acc_radial[:5]))
+        self.wait()
+        self.play(Write(acc_radial[5:]))
+        self.wait()
+        acc_angular = MathTex(
+            'a_\\theta', '=', '2', '\\dot{r}', '\\dot{\\theta}', '=', '2', '(1.2)', '(3)', '=7.2\\,\\mathrm{m/s^2}',
+            color=BLUE
+        ).scale(0.75).next_to(acc_radial, DOWN, aligned_edge=LEFT)
+        acc_angular[5:].shift(acc_angular[1].get_center()-acc_angular[5].get_center()+0.6*DOWN)
+        self.play(Write(acc_angular[:5]))
+        self.wait()
+        self.play(Write(acc_angular[5:]))
+        self.wait()
+        acc_mag = MathTex('|\\vec{a}| = \\sqrt{a_{r}^2 + a_{\\theta}^2} = 8.49\\,\\mathrm{m/s^2}', color=BLUE).scale(0.75).next_to(acc_angular, DOWN, aligned_edge=LEFT)
+        self.play(Write(acc_mag))
+        acc_answer_box = SurroundingRectangle(acc_mag, buff=.1)
+        self.play(ShowCreation(acc_answer_box))
+        self.wait()
 
         # TODO: Explain the rest of the fucking problem
 
