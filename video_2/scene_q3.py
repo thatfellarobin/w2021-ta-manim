@@ -231,13 +231,13 @@ class P3(Scene):
         self.play(Write(acc_radial[5:]))
         self.wait()
         acc_angular = MathTex(
-            'a_\\theta', '=', '2', '\\dot{r}', '\\dot{\\theta}', '=', '2', '(1.2)', '(3)', '=7.2\\,\\mathrm{m/s^2}',
+            'a_\\theta', '=', 'r\\ddot{\\theta}+2\\dot{r}\\dot{\\theta}', '=', '(0.5)0+2(1.2)(3)=7.2\\,\\mathrm{m/s^2}',
             color=BLUE
         ).scale(0.75).next_to(acc_radial, DOWN, aligned_edge=LEFT)
-        acc_angular[5:].shift(acc_angular[1].get_center()-acc_angular[5].get_center()+0.6*DOWN)
-        self.play(Write(acc_angular[:5]))
+        acc_angular[3:].shift(acc_angular[1].get_center()-acc_angular[3].get_center()+0.6*DOWN)
+        self.play(Write(acc_angular[:3]))
         self.wait()
-        self.play(Write(acc_angular[5:]))
+        self.play(Write(acc_angular[3:]))
         self.wait()
         acc_mag = MathTex('|\\vec{a}| = \\sqrt{a_{r}^2 + a_{\\theta}^2} = 8.49\\,\\mathrm{m/s^2}', color=BLUE).scale(0.75).next_to(acc_angular, DOWN, aligned_edge=LEFT)
         self.play(Write(acc_mag))
