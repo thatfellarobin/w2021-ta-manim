@@ -245,5 +245,3 @@ class P3(Scene):
         self.play(ShowCreation(acc_answer_box))
         self.wait()
 
-        # TODO: Explain the rest of the fucking problem
-
