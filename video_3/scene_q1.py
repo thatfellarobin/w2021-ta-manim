@@ -6,7 +6,7 @@ GREEN_DARK = '#2b4022'
 
 class PartA(Scene):
     def construct(self):
-        ## Diagram imagery
+        #region Diagram imagery
         block_A = Rectangle(
             color=TEAL,
             height=1.5,
@@ -37,10 +37,12 @@ class PartA(Scene):
         wall = Line(start=ORIGIN, end=3.5*UP, color=GREY).shift(floor.get_end())
 
         rope_tie_1 = Dot(
-            color=YELLOW_A
+            color=YELLOW_A,
+            radius=0.16
         ).move_to(B.get_edge_center(RIGHT))
         rope_tie_2 = Dot(
-            color=YELLOW_A
+            color=YELLOW_A,
+            radius=0.16
         ).move_to(wall.get_center()).align_to(rope_tie_1, UP)
         rope = Line(
             start=rope_tie_1.get_center(),
@@ -57,6 +59,7 @@ class PartA(Scene):
         force_label = MathTex("P", color=pull_force.get_color()).scale(1.4).next_to(pull_force, LEFT)
 
         diagram = Group(floor, wall, rope, rope_tie_1, rope_tie_2, A, B, pull_force, force_label).move_to(ORIGIN)
+        #endregion
 
         # Need to copy before the diagram transformation to preserve the scale
         A_fbd = A.copy().move_to(ORIGIN).scale(0.55).shift(3.5*LEFT+1.5*UP)
@@ -67,11 +70,11 @@ class PartA(Scene):
 
         dividing_line = Line(start=3*DOWN, end=3*UP, color=GREY)
 
-        self.play(Transform(diagram, diagram.copy().scale(0.3).shift(5*LEFT+3*UP)))
+        self.play(Transform(diagram, diagram.copy().scale(0.3).shift(5.5*LEFT+3*UP)))
         self.play(ShowCreation(dividing_line))
         self.wait()
 
-        # Animate free body diagram for block A
+        #region Animate free body diagram for block A
         self.play(FadeIn(A_fbd))
         self.wait()
         P = Arrow(
@@ -133,16 +136,58 @@ class PartA(Scene):
         self.wait()
         self.play(Write(A_mg), Write(A_mg_label))
         self.wait()
-        self.play(Write(normal_A_1), Write(normal_A_1_label))
+        self.play(Write(normal_A_1), Write(normal_A_1_label), Write(normal_A_2), Write(normal_A_2_label))
         self.wait()
-        self.play(Write(normal_A_2), Write(normal_A_2_label))
+        self.play(Write(fric_A_1), Write(fric_A_1_label), Write(fric_A_2), Write(fric_A_2_label))
         self.wait()
-        self.play(Write(fric_A_1), Write(fric_A_1_label))
-        self.wait()
-        self.play(Write(fric_A_2), Write(fric_A_2_label))
-        self.wait()
+        #endregion
 
-        # Animate free body diagram for block B
+        #region 2nd law for block A
+        sum_fx_A = MathTex(
+            '\\Sigma F_x',
+            '=',
+            'ma_A',
+            '=',
+            '\\mu N_1',
+            '+',
+            '\\mu N_2',
+            '-',
+            'P',
+        ).scale(0.7).to_edge(LEFT).shift(0.25*DOWN)
+        sum_fx_A[0].set_color(YELLOW)
+        sum_fx_A[4].set_color(MAROON)
+        sum_fx_A[6].set_color(MAROON)
+        sum_fx_A[8].set_color(RED)
+        sum_fy_A = MathTex(
+            '\\Sigma F_y',
+            '=',
+            '0',
+            '=',
+            'N_1',
+            '-',
+            'N_2',
+            '-',
+            'mg',
+        ).scale(0.7).next_to(sum_fx_A, DOWN, aligned_edge=LEFT)
+        sum_fy_A[0].set_color(YELLOW)
+        sum_fy_A[4].set_color(PURPLE)
+        sum_fy_A[6].set_color(PURPLE)
+        sum_fy_A[8].set_color(BLUE)
+        self.play(Write(sum_fx_A[0]))
+        self.wait()
+        self.play(Write(sum_fx_A[1:3]))
+        self.wait()
+        self.play(Write(sum_fx_A[3:]))
+        self.wait()
+        self.play(Write(sum_fy_A[0]))
+        self.wait()
+        self.play(Write(sum_fy_A[1:3]))
+        self.wait()
+        self.play(Write(sum_fy_A[3:]))
+        self.wait()
+        #endregion
+
+        #region Animate free body diagram for block B
         self.play(FadeIn(B_fbd))
         self.wait()
         B_mg = Arrow(
@@ -190,6 +235,47 @@ class PartA(Scene):
         self.wait()
         self.play(Write(T), Write(T_label))
         self.wait()
+        #endregion
+
+        #region 2nd law for block B
+        sum_fx_B = MathTex(
+            '\\Sigma F_x',
+            '=',
+            '0',
+            '=',
+            'T',
+            '-',
+            '\\mu N_2',
+        ).scale(0.7).next_to(dividing_line, RIGHT).shift(0.25*DOWN + 0.25*RIGHT)
+        sum_fx_B[0].set_color(YELLOW)
+        sum_fx_B[4].set_color(RED)
+        sum_fx_B[6].set_color(MAROON)
+        sum_fy_B = MathTex(
+            '\\Sigma F_y',
+            '=',
+            '0',
+            '=',
+            'N_2',
+            '-',
+            'mg',
+        ).scale(0.7).next_to(sum_fx_B, DOWN, aligned_edge=LEFT)
+        sum_fy_B[0].set_color(YELLOW)
+        sum_fy_B[4].set_color(PURPLE)
+        sum_fy_B[6].set_color(BLUE)
+        self.play(Write(sum_fx_B[0]))
+        self.wait()
+        self.play(Write(sum_fx_B[1:3]))
+        self.wait()
+        self.play(Write(sum_fx_B[3:]))
+        self.wait()
+        self.play(Write(sum_fy_B[0]))
+        self.wait()
+        self.play(Write(sum_fy_B[1:3]))
+        self.wait()
+        self.play(Write(sum_fy_B[3:]))
+        self.wait()
+        #endregion
+
 
 class PartB(Scene):
     def construct(self):
