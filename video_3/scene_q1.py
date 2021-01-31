@@ -495,7 +495,7 @@ class PartB(Scene):
         dividing_line = Line(start=3*DOWN, end=2*UP, color=GREY)
         self.play(
             Transform(diagram, diagram.copy().scale(0.3).shift(2.0*LEFT+1.5*UP)),
-            Transform(dd_cons_of_string_expr, dd_cons_of_string_expr.copy().scale(0.8).to_edge(UP, buff=1).shift(2*RIGHT))
+            Transform(dd_cons_of_string_expr, dd_cons_of_string_expr.copy().scale(0.8).to_edge(UP, buff=0.5).shift(2*RIGHT))
         )
         self.play(ShowCreation(dividing_line))
         self.wait()
@@ -719,71 +719,130 @@ class PartB(Scene):
         self.wait()
         #endregion
 
-        # #region Math it out
-        # # solve y axis of block B
-        # self.play(FadeOut(sum_fy_B[:2]))
-        # self.wait()
-        # self.play(FadeOut(sum_fy_B[2]), FadeOut(sum_fy_B[5]))
-        # self.play(Transform(sum_fy_B[-1], sum_fy_B[-1].copy().set_color(WHITE).next_to(sum_fy_B[3], LEFT).shift(0.05*DOWN)))
-        # self.wait()
-        # # solve x axis of block B
-        # # Well we actually don't care about what the tension is.
-        # cross_out = Line(start=sum_fx_B.get_edge_center(LEFT), end=sum_fx_B.get_edge_center(RIGHT), color=YELLOW)
-        # self.play(ShowCreation(cross_out))
-        # self.wait()
-        # # solve y axis of block A
-        # self.play(FadeOut(sum_fy_A[:2]))
-        # self.wait()
-        # self.play(
-        #     FadeOut(sum_fy_A[2]),
-        #     FadeOut(sum_fy_A[5]),
-        #     FadeOut(sum_fy_A[7])
-        # )
-        # two_mg = MathTex('2mg').scale(0.7).next_to(sum_fy_A[3], LEFT)
-        # self.play(
-        #     Transform(sum_fy_A[6], two_mg),
-        #     Transform(sum_fy_A[8], two_mg),
-        # )
-        # self.wait()
-        # # solve x axis of block A
-        # sum_fx_A_solved = MathTex(
-        #     '\\Sigma F_x',
-        #     '=',
-        #     'ma_A',
-        #     '=',
-        #     '3\\mu mg',
-        #     '-',
-        #     'P'
-        # ).scale(0.7).to_edge(LEFT).shift(0.25*DOWN)
-        # sum_fx_A_solved[6].set_color(RED)
-        # self.play(
-        #     ReplacementTransform(sum_fx_A[:4], sum_fx_A_solved[:4]),
-        #     ReplacementTransform(sum_fx_A[4:7], sum_fx_A_solved[4]),
-        #     ReplacementTransform(sum_fx_A[7], sum_fx_A_solved[5]),
-        #     ReplacementTransform(sum_fx_A[8], sum_fx_A_solved[6])
-        # )
-        # self.wait()
-        # final_equation = MathTex(
-        #     'a_A',
-        #     '=',
-        #     '3\\mu g',
-        #     '-',
-        #     '\\frac{P}{m}'
-        # ).scale(1.0).shift(2.1*DOWN)
-        # dividing_line_short = Line(start=1*DOWN, end=3*UP, color=GREY)
-        # self.play(
-        #     Transform(dividing_line, dividing_line_short),
-        #     Transform(sum_fx_A_solved, sum_fx_A_solved.copy().scale(1.0/0.7).shift(final_equation[1].get_center() - sum_fx_A_solved[3].get_center()))
-        # )
-        # self.play(FadeOut(sum_fx_A_solved[:2]))
-        # self.wait()
-        # self.play(
-        #     *[Transform(sum_fx_A_solved[i+2], final_equation[i]) for i in range(5)]
-        # )
-        # self.wait()
-        # ansbox = SurroundingRectangle(final_equation, buff=0.25)
-        # self.play(ShowCreation(ansbox))
-        # self.wait()
-        # #endregion
+        #region Math it out
+        # solve y axis of block B
+        self.play(
+            FadeOut(sum_fy_B[:2]),
+            FadeOut(sum_fy_B[2]),
+            FadeOut(sum_fy_B[5])
+        )
+        self.play(Transform(sum_fy_B[-1], sum_fy_B[-1].copy().set_color(WHITE).next_to(sum_fy_B[3], LEFT).shift(0.05*DOWN)))
+        sum_fy_B_result = Group(sum_fy_B[-1], sum_fy_B[3:5])
+        self.wait()
+        self.play(Transform(sum_fy_B_result, sum_fy_B_result.copy().next_to(dd_cons_of_string_expr, DOWN, aligned_edge=LEFT)))
+        self.wait()
+        # solve y axis of block A
+        self.play(
+            FadeOut(sum_fy_A[:2]),
+            FadeOut(sum_fy_A[2]),
+            FadeOut(sum_fy_A[5]),
+            FadeOut(sum_fy_A[7])
+        )
+        two_mg = MathTex('2mg').scale(0.7).next_to(sum_fy_A[3], LEFT)
+        self.play(
+            ReplacementTransform(sum_fy_A[6], two_mg),
+            ReplacementTransform(sum_fy_A[8], two_mg),
+        )
+        sum_fy_A_result = Group(two_mg, sum_fy_A[3:5])
+        self.wait()
+        self.play(Transform(sum_fy_A_result, sum_fy_A_result.copy().next_to(sum_fy_B_result, DOWN, aligned_edge=LEFT)))
+        self.wait()
+        # solve x axis of each.
+        self.play(FadeOut(sum_fx_A[:2]), FadeOut(sum_fx_B[:2]))
+        sum_fx_A = sum_fx_A[2:]
+        sum_fx_B = sum_fx_B[2:]
+        highlight_box = SurroundingRectangle(dd_cons_of_string_expr, buff=0.1)
+        self.play(ShowCreation(highlight_box))
+        self.wait()
+        self.play(FadeOut(highlight_box))
+        sum_fx_B_subbed = MathTex(
+            'm(-a_A)',
+            '=',
+            'T',
+            '-',
+            '\\mu N_2',
+        ).scale(0.7)
+        sum_fx_B_subbed.shift(sum_fx_B[1].get_center() - sum_fx_B_subbed[1].get_center())
+        sum_fx_B_subbed2 = MathTex(
+            'ma_A',
+            '=',
+            '-T',
+            '+',
+            '\\mu N_2',
+        ).scale(0.7)
+        sum_fx_B_subbed2.shift(sum_fx_B[1].get_center() - sum_fx_B_subbed2[1].get_center())
+        sum_fx_B_subbed[2].set_color(RED)
+        sum_fx_B_subbed[4].set_color(MAROON)
+        sum_fx_B_subbed2[2].set_color(RED)
+        sum_fx_B_subbed2[4].set_color(MAROON)
+        self.play(*[ReplacementTransform(sum_fx_B[i], sum_fx_B_subbed[i]) for i in range(5)])
+        self.wait()
+        self.play(*[ReplacementTransform(sum_fx_B_subbed[i], sum_fx_B_subbed2[i]) for i in range(5)])
+        self.wait()
 
-        # Scene imagery
+        dividing_line_short = Line(start=DOWN, end=2*UP, color=GREY)
+        self.play(Transform(dividing_line, dividing_line_short))
+
+        x_equated = MathTex(
+            'ma_A',
+            '=',
+            '\\mu N_1',
+            '+',
+            '\\mu N_2',
+            '-',
+            'P',
+            '+',
+            'T',
+            '=',
+            '-T',
+            '+',
+            '\\mu N_2',
+            '\\Rightarrow',
+            'T=\\frac{P}{2}-\\mu mg'
+        ).scale(0.8).shift(2*DOWN)
+        x_equated[2].set_color(MAROON)
+        x_equated[4].set_color(MAROON)
+        x_equated[6].set_color(RED)
+        x_equated[8].set_color(RED)
+        x_equated[10].set_color(RED)
+        x_equated[12].set_color(MAROON)
+        x_equated[-1].set_color(YELLOW)
+
+        x_equated_subbed = MathTex(
+            'ma_A',
+            '=',
+            '2\\mu mg',
+            '+',
+            '\\mu mg',
+            '-',
+            'P',
+            '+',
+            'T',
+            '=',
+            '-T',
+            '+',
+            '\\mu mg',
+            '\\Rightarrow',
+            'T=\\frac{P}{2}-\\mu mg'
+        ).scale(0.8).shift(2*DOWN)
+        x_equated_subbed[2].set_color(MAROON)
+        x_equated_subbed[4].set_color(MAROON)
+        x_equated_subbed[6].set_color(RED)
+        x_equated_subbed[8].set_color(RED)
+        x_equated_subbed[10].set_color(RED)
+        x_equated_subbed[12].set_color(MAROON)
+        x_equated_subbed[-1].set_color(YELLOW)
+
+        self.play(Write(x_equated[:-2]))
+        self.wait()
+        self.play(*[ReplacementTransform(x_equated[i], x_equated_subbed[i]) for i in range(len(x_equated)-2)])
+        self.wait()
+        self.play(FadeOut(x_equated_subbed[:2]))
+        self.play(Write(x_equated_subbed[-2:]))
+        self.wait()
+        ans = MathTex('a_A=\\frac{-P}{2m}+2\\mu g').next_to(x_equated_subbed, DOWN)
+        self.play(Write(ans))
+        ansbox = SurroundingRectangle(ans, buff=0.2)
+        self.play(ShowCreation(ansbox))
+        self.wait()
+        #endregion
