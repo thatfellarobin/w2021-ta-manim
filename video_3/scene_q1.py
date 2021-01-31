@@ -465,8 +465,8 @@ class PartB(Scene):
         cons_of_string_expr = MathTex('s_A', '+', 's_B', '=', 'L_{tot}').shift(DOWN)
         cons_of_string_expr[0].set_color(GREEN)
         cons_of_string_expr[2].set_color(GREEN)
-        cons_of_string = Tex('"Conservation of string"', color=YELLOW).scale(0.6).next_to(cons_of_string_expr, DOWN)
-        taking_the_double_deriv = Tex('Take the 2nd derivative...', color=YELLOW).scale(0.6).next_to(cons_of_string_expr, DOWN)
+        cons_of_string = Tex('"Conservation of string"', color=YELLOW).scale(0.75).next_to(cons_of_string_expr, DOWN)
+        taking_the_double_deriv = Tex('Take the 2nd derivative $\\frac{d^2}{dt^2}$...', color=YELLOW).scale(0.75).next_to(cons_of_string_expr, DOWN)
         self.play(Write(cons_of_string_expr))
         self.play(Write(cons_of_string, run_time=1.0))
         self.wait()
@@ -490,213 +490,234 @@ class PartB(Scene):
 
         # Put the diagram away and prepare to work on the free body diagrams.
         # Need to copy before the diagram transformation to preserve the scale
-        A_fbd = A.copy().move_to(ORIGIN).scale(0.55).shift(3.5*LEFT+1.5*UP)
-        B_fbd = B.copy().move_to(ORIGIN).scale(0.55).shift(3.5*RIGHT+1.5*UP)
+        A_fbd = A.copy().move_to(ORIGIN).scale(0.55).shift(3.5*LEFT+0.5*UP)
+        B_fbd = B.copy().move_to(ORIGIN).scale(0.55).shift(3.5*RIGHT+0.5*UP)
         dividing_line = Line(start=3*DOWN, end=2*UP, color=GREY)
         self.play(
             Transform(diagram, diagram.copy().scale(0.3).shift(2.0*LEFT+1.5*UP)),
-            Transform(dd_cons_of_string_expr, dd_cons_of_string_expr.copy().scale(0.8).shift(2*RIGHT+5*UP))
+            Transform(dd_cons_of_string_expr, dd_cons_of_string_expr.copy().scale(0.8).to_edge(UP, buff=1).shift(2*RIGHT))
         )
         self.play(ShowCreation(dividing_line))
         self.wait()
 
-        # #region Animate free body diagram for block A
-        # self.play(FadeIn(A_fbd))
-        # self.wait()
-        # P = Arrow(
-        #     color=RED,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=1.5*LEFT,
-        #     max_stroke_width_to_length_ratio=999,
-        #     max_tip_length_to_length_ratio=1
-        # ).next_to(A_fbd, LEFT, buff=0)
-        # P_label = MathTex("P", color=P.get_color()).scale(0.8).next_to(P, LEFT)
-        # A_mg = Arrow(
-        #     color=BLUE,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=1.0*DOWN,
-        #     max_stroke_width_to_length_ratio=999,
-        #     max_tip_length_to_length_ratio=1
-        # ).shift(A_fbd.get_center()+0.1*LEFT)
-        # A_mg_label = MathTex("mg", color=A_mg.get_color()).scale(0.8).next_to(A_mg, LEFT, aligned_edge=DOWN)
-        # normal_A_1 = Arrow(
-        #     color=PURPLE,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=0.8*UP,
-        #     max_stroke_width_to_length_ratio=999,
-        #     max_tip_length_to_length_ratio=1
-        # ).next_to(A_fbd, DOWN, buff=0).shift(0.1*RIGHT)
-        # normal_A_1_label = MathTex("N_1", color=normal_A_1.get_color()).scale(0.8).next_to(normal_A_1, RIGHT, buff=0, aligned_edge=DOWN)
-        # normal_A_2 = Arrow(
-        #     color=PURPLE,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=0.8*DOWN,
-        #     max_stroke_width_to_length_ratio=999,
-        #     max_tip_length_to_length_ratio=1
-        # ).next_to(A_fbd, UP, buff=0)
-        # normal_A_2_label = MathTex("N_2", color=normal_A_2.get_color()).scale(0.8).next_to(normal_A_2, RIGHT, buff=0, aligned_edge=UP)
-        # fric_A_1 = Arrow(
-        #     color=MAROON,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=1.5*RIGHT,
-        #     max_stroke_width_to_length_ratio=999,
-        #     max_tip_length_to_length_ratio=1
-        # ).shift(A_fbd.get_edge_center(DOWN))
-        # fric_A_1_label = MathTex("F_{f1}", color=fric_A_1.get_color()).scale(0.8).next_to(fric_A_1, RIGHT)
-        # fric_A_2 = Arrow(
-        #     color=MAROON,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=1.5*RIGHT,
-        #     max_stroke_width_to_length_ratio=999,
-        #     max_tip_length_to_length_ratio=1
-        # ).shift(A_fbd.get_edge_center(UP))
-        # fric_A_2_label = MathTex("F_{f2}", color=fric_A_2.get_color()).scale(0.8).next_to(fric_A_2, RIGHT)
+        #region Animate free body diagram for block A
+        self.play(FadeIn(A_fbd))
+        self.wait()
+        P = Arrow(
+            color=RED,
+            buff=0,
+            start=ORIGIN,
+            end=1.5*LEFT,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).next_to(A_fbd, LEFT, buff=0)
+        P_label = MathTex("P", color=P.get_color()).scale(0.8).next_to(P, LEFT)
+        A_mg = Arrow(
+            color=BLUE,
+            buff=0,
+            start=ORIGIN,
+            end=1.0*DOWN,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(A_fbd.get_center()+0.1*LEFT)
+        A_mg_label = MathTex("mg", color=A_mg.get_color()).scale(0.8).next_to(A_mg, LEFT, aligned_edge=DOWN)
+        normal_A_1 = Arrow(
+            color=PURPLE,
+            buff=0,
+            start=ORIGIN,
+            end=0.8*UP,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).next_to(A_fbd, DOWN, buff=0).shift(0.1*RIGHT)
+        normal_A_1_label = MathTex("N_1", color=normal_A_1.get_color()).scale(0.8).next_to(normal_A_1, RIGHT, buff=0, aligned_edge=DOWN)
+        normal_A_2 = Arrow(
+            color=PURPLE,
+            buff=0,
+            start=ORIGIN,
+            end=0.8*DOWN,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).next_to(A_fbd, UP, buff=0)
+        normal_A_2_label = MathTex("N_2", color=normal_A_2.get_color()).scale(0.8).next_to(normal_A_2, RIGHT, buff=0, aligned_edge=UP)
+        fric_A_1 = Arrow(
+            color=MAROON,
+            buff=0,
+            start=ORIGIN,
+            end=1.5*RIGHT,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(A_fbd.get_edge_center(DOWN))
+        fric_A_1_label = MathTex("F_{f1}", color=fric_A_1.get_color()).scale(0.8).next_to(fric_A_1, RIGHT)
+        fric_A_2 = Arrow(
+            color=MAROON,
+            buff=0,
+            start=ORIGIN,
+            end=1.5*RIGHT,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(A_fbd.get_edge_center(UP))
+        fric_A_2_label = MathTex("F_{f2}", color=fric_A_2.get_color()).scale(0.8).next_to(fric_A_2, RIGHT)
+        tension_A = Arrow(
+            color=RED,
+            buff=0,
+            start=ORIGIN,
+            end=1.5*RIGHT,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(A_fbd.get_edge_center(RIGHT))
+        tension_A_label = MathTex("T", color=tension_A.get_color()).scale(0.8).next_to(tension_A, RIGHT)
 
-        # self.play(Write(P), Write(P_label))
-        # self.wait()
-        # self.play(Write(A_mg), Write(A_mg_label))
-        # self.wait()
-        # self.play(Write(normal_A_1), Write(normal_A_1_label), Write(normal_A_2), Write(normal_A_2_label))
-        # self.wait()
-        # self.play(Write(fric_A_1), Write(fric_A_1_label), Write(fric_A_2), Write(fric_A_2_label))
-        # self.wait()
-        # #endregion
+        # same as part A but with tension
+        self.play(
+            Write(P),
+            Write(P_label),
+            Write(A_mg),
+            Write(A_mg_label),
+            Write(normal_A_1),
+            Write(normal_A_1_label),
+            Write(normal_A_2),
+            Write(normal_A_2_label),
+            Write(fric_A_1),
+            Write(fric_A_1_label),
+            Write(fric_A_2),
+            Write(fric_A_2_label)
+        )
+        self.wait()
+        self.play(
+            Write(tension_A),
+            Write(tension_A_label)
+        )
+        #endregion
 
-        # #region 2nd law for block A
-        # sum_fx_A = MathTex(
-        #     '\\Sigma F_x',
-        #     '=',
-        #     'ma_A',
-        #     '=',
-        #     '\\mu N_1',
-        #     '+',
-        #     '\\mu N_2',
-        #     '-',
-        #     'P',
-        # ).scale(0.7).to_edge(LEFT).shift(0.25*DOWN)
-        # sum_fx_A[0].set_color(YELLOW)
-        # sum_fx_A[4].set_color(MAROON)
-        # sum_fx_A[6].set_color(MAROON)
-        # sum_fx_A[8].set_color(RED)
-        # sum_fy_A = MathTex(
-        #     '\\Sigma F_y',
-        #     '=',
-        #     '0',
-        #     '=',
-        #     'N_1',
-        #     '-',
-        #     'N_2',
-        #     '-',
-        #     'mg',
-        # ).scale(0.7).next_to(sum_fx_A, DOWN, aligned_edge=LEFT)
-        # sum_fy_A[0].set_color(YELLOW)
-        # sum_fy_A[4].set_color(PURPLE)
-        # sum_fy_A[6].set_color(PURPLE)
-        # sum_fy_A[8].set_color(BLUE)
-        # self.play(Write(sum_fx_A[0]))
-        # self.play(Write(sum_fx_A[1:3]))
-        # self.wait()
-        # self.play(Write(sum_fx_A[3:]))
-        # self.wait()
-        # self.play(Write(sum_fy_A[0]))
-        # self.play(Write(sum_fy_A[1:3]))
-        # self.wait()
-        # self.play(Write(sum_fy_A[3:]))
-        # self.wait()
-        # #endregion
+        #region 2nd law for block A
+        sum_fx_A = MathTex(
+            '\\Sigma F_x',
+            '=',
+            'ma_A',
+            '=',
+            '\\mu N_1',
+            '+',
+            '\\mu N_2',
+            '-',
+            'P',
+            '+',
+            'T'
+        ).scale(0.7).to_edge(LEFT).shift(1.25*DOWN)
+        sum_fx_A[0].set_color(YELLOW)
+        sum_fx_A[4].set_color(MAROON)
+        sum_fx_A[6].set_color(MAROON)
+        sum_fx_A[8].set_color(RED)
+        sum_fx_A[10].set_color(RED)
+        sum_fy_A = MathTex(
+            '\\Sigma F_y',
+            '=',
+            '0',
+            '=',
+            'N_1',
+            '-',
+            'N_2',
+            '-',
+            'mg',
+        ).scale(0.7).next_to(sum_fx_A, DOWN, aligned_edge=LEFT)
+        sum_fy_A[0].set_color(YELLOW)
+        sum_fy_A[4].set_color(PURPLE)
+        sum_fy_A[6].set_color(PURPLE)
+        sum_fy_A[8].set_color(BLUE)
+        self.play(Write(sum_fx_A))
+        self.wait()
+        self.play(Write(sum_fy_A))
+        self.wait()
+        #endregion
 
-        # #region Animate free body diagram for block B
-        # self.play(FadeIn(B_fbd))
-        # self.wait()
-        # B_mg = Arrow(
-        #     color=BLUE,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=1.0*DOWN,
-        #     max_stroke_width_to_length_ratio=999,
-        #     max_tip_length_to_length_ratio=1
-        # ).shift(B_fbd.get_center()+0.1*LEFT)
-        # B_mg_label = MathTex("mg", color=B_mg.get_color()).scale(0.8).next_to(B_mg, LEFT, aligned_edge=DOWN)
-        # normal_B_2 = Arrow(
-        #     color=PURPLE,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=0.8*UP,
-        #     max_stroke_width_to_length_ratio=999,
-        #     max_tip_length_to_length_ratio=1
-        # ).next_to(B_fbd, DOWN, buff=0).shift(0.1*RIGHT)
-        # normal_B_2_label = MathTex("N_2", color=normal_B_2.get_color()).scale(0.8).next_to(normal_B_2, RIGHT, buff=0, aligned_edge=DOWN)
-        # fric_B_2 = Arrow(
-        #     color=MAROON,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=1.5*LEFT,
-        #     max_stroke_width_to_length_ratio=999,
-        #     max_tip_length_to_length_ratio=1
-        # ).shift(B_fbd.get_edge_center(DOWN))
-        # fric_B_2_label = MathTex("F_{f2}", color=fric_B_2.get_color()).scale(0.8).next_to(fric_B_2, LEFT)
-        # T = Arrow(
-        #     color=RED,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=1.5*RIGHT,
-        #     max_stroke_width_to_length_ratio=999,
-        #     max_tip_length_to_length_ratio=1
-        # ).next_to(B_fbd, RIGHT, buff=0)
-        # T_label = MathTex("T", color=T.get_color()).scale(0.8).next_to(T, RIGHT)
+        #region Animate free body diagram for block B
+        self.play(FadeIn(B_fbd))
+        self.wait()
+        B_mg = Arrow(
+            color=BLUE,
+            buff=0,
+            start=ORIGIN,
+            end=1.0*DOWN,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(B_fbd.get_center()+0.1*LEFT)
+        B_mg_label = MathTex("mg", color=B_mg.get_color()).scale(0.8).next_to(B_mg, LEFT, aligned_edge=DOWN)
+        normal_B_2 = Arrow(
+            color=PURPLE,
+            buff=0,
+            start=ORIGIN,
+            end=0.8*UP,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).next_to(B_fbd, DOWN, buff=0).shift(0.1*RIGHT)
+        normal_B_2_label = MathTex("N_2", color=normal_B_2.get_color()).scale(0.8).next_to(normal_B_2, RIGHT, buff=0, aligned_edge=DOWN)
+        fric_B_2 = Arrow(
+            color=MAROON,
+            buff=0,
+            start=ORIGIN,
+            end=1.5*LEFT,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(B_fbd.get_edge_center(DOWN))
+        fric_B_2_label = MathTex("F_{f2}", color=fric_B_2.get_color()).scale(0.8).next_to(fric_B_2, LEFT)
+        tension_B = Arrow(
+            color=RED,
+            buff=0,
+            start=ORIGIN,
+            end=1.5*RIGHT,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).next_to(B_fbd, RIGHT, buff=0)
+        tension_B_label = MathTex("T", color=tension_B.get_color()).scale(0.8).next_to(tension_B, RIGHT)
 
-        # self.play(Write(B_mg), Write(B_mg_label))
-        # self.wait()
-        # self.play(Write(normal_B_2), Write(normal_B_2_label))
-        # self.wait()
-        # self.play(Write(fric_B_2), Write(fric_B_2_label))
-        # self.wait()
-        # self.play(Write(T), Write(T_label))
-        # self.wait()
-        # #endregion
+        self.play(
+            Write(B_mg),
+            Write(B_mg_label),
+            Write(normal_B_2),
+            Write(normal_B_2_label),
+            Write(fric_B_2),
+            Write(fric_B_2_label),
+            Write(tension_B),
+            Write(tension_B_label)
+        )
+        self.wait()
+        #endregion
 
-        # #region 2nd law for block B
-        # sum_fx_B = MathTex(
-        #     '\\Sigma F_x',
-        #     '=',
-        #     '0',
-        #     '=',
-        #     'T',
-        #     '-',
-        #     '\\mu N_2',
-        # ).scale(0.7).next_to(dividing_line, RIGHT).shift(0.25*DOWN + 0.25*RIGHT)
-        # sum_fx_B[0].set_color(YELLOW)
-        # sum_fx_B[4].set_color(RED)
-        # sum_fx_B[6].set_color(MAROON)
-        # sum_fy_B = MathTex(
-        #     '\\Sigma F_y',
-        #     '=',
-        #     '0',
-        #     '=',
-        #     'N_2',
-        #     '-',
-        #     'mg',
-        # ).scale(0.7).next_to(sum_fx_B, DOWN, aligned_edge=LEFT)
-        # sum_fy_B[0].set_color(YELLOW)
-        # sum_fy_B[4].set_color(PURPLE)
-        # sum_fy_B[6].set_color(BLUE)
-        # self.play(Write(sum_fx_B[0]))
-        # self.play(Write(sum_fx_B[1:3]))
-        # self.wait()
-        # self.play(Write(sum_fx_B[3:]))
-        # self.wait()
-        # self.play(Write(sum_fy_B[0]))
-        # self.play(Write(sum_fy_B[1:3]))
-        # self.wait()
-        # self.play(Write(sum_fy_B[3:]))
-        # self.wait()
-        # #endregion
+        #region 2nd law for block B
+        sum_fx_B = MathTex(
+            '\\Sigma F_x',
+            '=',
+            'ma_B',
+            '=',
+            'T',
+            '-',
+            '\\mu N_2',
+        ).scale(0.7).next_to(ORIGIN, RIGHT).shift(1.25*DOWN + 0.25*RIGHT)
+        sum_fx_B[0].set_color(YELLOW)
+        sum_fx_B[4].set_color(RED)
+        sum_fx_B[6].set_color(MAROON)
+        sum_fy_B = MathTex(
+            '\\Sigma F_y',
+            '=',
+            '0',
+            '=',
+            'N_2',
+            '-',
+            'mg',
+        ).scale(0.7).next_to(sum_fx_B, DOWN, aligned_edge=LEFT)
+        sum_fy_B[0].set_color(YELLOW)
+        sum_fy_B[4].set_color(PURPLE)
+        sum_fy_B[6].set_color(BLUE)
+        self.play(
+            Write(sum_fx_B),
+            Write(sum_fy_B)
+        )
+        self.wait()
+        highlight_box = SurroundingRectangle(sum_fx_B[2], buff=0.1)
+        self.play(ShowCreation(highlight_box))
+        self.wait()
+        self.play(FadeOut(highlight_box))
+        self.wait()
+        #endregion
 
         # #region Math it out
         # # solve y axis of block B
