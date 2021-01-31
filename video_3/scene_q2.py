@@ -75,7 +75,7 @@ class Q2(Scene):
             arc_center=hinge.get_center(),
             color=YELLOW
         ).add_tip(tip_length=0.2)
-        theta_annot = MathTex('\\theta', color=YELLOW).next_to(theta_arrow, UP, buff=0)
+        theta_annot = MathTex('\\theta=30^{\\circ}', color=YELLOW).scale(0.7).next_to(theta_arrow, UP, buff=0.1).shift(0.1*RIGHT)
         self.play(
             ShowCreation(theta_ref),
             ShowCreation(theta_arrow),
@@ -109,10 +109,94 @@ class Q2(Scene):
         #endregion
 
         full_diagram = Group(diagram, mask, r_arrow, r_annot, theta_ref, theta_arrow, theta_annot, h_ref, h_arrow, h_annot)
+        self.play(Transform(full_diagram, full_diagram.copy().scale(0.8).shift(4.5*LEFT+1.5*UP)))
+        given_theta_dot = MathTex('\\dot{\\theta}=2\\,\\mathrm{rad/s}').scale(0.7).next_to(full_diagram, DOWN, aligned_edge=LEFT)
+        given_theta_ddot = MathTex('\\ddot{\\theta}=3\\,\\mathrm{rad/s^2}').scale(0.7).next_to(given_theta_dot, DOWN, aligned_edge=LEFT)
         self.play(
-            full_diagram.animate.shift(4*LEFT)
+            Write(given_theta_dot),
+            Write(given_theta_ddot)
         )
+        self.wait()
 
-        #region Math!
+        #region Calculations arising from the geometry
+        geom_1 = MathTex(
+            'h=r\\cos(\\theta)',
+            '\\Rightarrow',
+            'r',
+            '=',
+            '\\frac{h}{\\cos(\\theta)}',
+            '=',
+            '0.58\\,\\mathrm{m}'
+        ).scale(0.7).to_edge(UP).shift(1.5*RIGHT)
+        geom_1[2:].set_color(YELLOW)
+        self.play(Write(geom_1[0]))
+        self.wait()
+        self.play(Write(geom_1[1:]))
+        self.wait()
+
+        hlbox = SurroundingRectangle(geom_1[0], buff=0.1)
+        self.play(ShowCreation(hlbox))
+        self.wait()
+
+        # First derivative
+        geom_d1 = MathTex(
+            '0=\\dot{r}\\cos(\\theta)-r\\sin(\\theta)\\dot{\\theta}',
+            '\\Rightarrow',
+            '\\dot{r}',
+            '=',
+            '\\frac{r\\sin(\\theta)}{\\cos(\\theta)}\\dot{\\theta}',
+            '=',
+            '0.67\\,\\mathrm{m/s}'
+        ).scale(0.7).next_to(geom_1, DOWN, aligned_edge=LEFT)
+        geom_d1[2:].set_color(YELLOW)
+        self.play(FadeOut(hlbox), Write(geom_d1))
+        self.wait()
+
+        # Second derivative
+        geom_d2 = MathTex(
+            '0',
+            '=',
+            '\\ddot{r}\\cos(\\theta) - 2\\dot{r}\\sin(\\theta)\\dot{\\theta} - r\\cos(\\theta)\\dot{\\theta}^2 - r\\sin(\\theta)\\ddot{\\theta}',
+            '\\Rightarrow',
+            '\\ddot{r}',
+            '=',
+            '2\\dot{r}\\dot{\\theta}\\tan(\\theta) + r\\dot{\\theta}^2 + r\\tan(\\theta)\\ddot{\\theta}',
+            '\\ddot{r}',
+            '=',
+            '4.85\\,\\mathrm{m/s^2}'
+        ).scale(0.7).next_to(geom_d1, DOWN, aligned_edge=LEFT)
+        geom_d2[-3:].set_color(YELLOW)
+        geom_d2[4:].shift((geom_d2[1].get_center()+0.7*DOWN)-geom_d2[5].get_center())
+        geom_d2[7:].shift((geom_d2[5].get_center()+0.7*DOWN)-geom_d2[8].get_center())
+        self.play(Write(geom_d2[:7]))
+        self.wait()
+        self.play(Write(geom_d2[7:]))
+        self.wait()
+
+        # Cleanup
+        self.play(
+            FadeOut(geom_1[:2]),
+            FadeOut(geom_1[4:6]),
+            FadeOut(geom_d1[:2]),
+            FadeOut(geom_d1[4:6]),
+            FadeOut(geom_d2[:-3]),
+            Transform(geom_1[-1], geom_1[-1].copy().shift(geom_1[3].get_center() - geom_1[-2].get_center())),
+            Transform(geom_d1[-1], geom_d1[-1].copy().shift(geom_d1[3].get_center() - geom_d1[-2].get_center()))
+        )
+        self.wait()
+        geom_1_result = Group(geom_1[2:4], geom_1[-1])
+        geom_d1_result = Group(geom_d1[2:4], geom_d1[-1])
+        geom_d2_result = Group(geom_d2[-3:])
+        geom_1_result_newpos = geom_1_result.copy().to_edge(UP).shift(2*LEFT)
+        geom_d1_result_newpos = geom_d1_result.copy().next_to(geom_1_result_newpos, RIGHT, buff=0.75).shift(0.04*DOWN)
+        geom_d2_result_newpos = geom_d2_result.copy().next_to(geom_d1_result_newpos, RIGHT, buff=0.75).shift(0.02*UP)
+        self.play(
+            Transform(geom_1_result, geom_1_result_newpos),
+            Transform(geom_d1_result, geom_d1_result_newpos),
+            Transform(geom_d2_result, geom_d2_result_newpos)
+        )
+        #endregion
+
+        #region Free body diagram
 
         #endregion
