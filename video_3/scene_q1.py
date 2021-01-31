@@ -441,83 +441,132 @@ class PartB(Scene):
         self.wait()
         #endregion
 
+        #region Talk about pulleys
+        mask = Rectangle(height=10, width=14, fill_color=BLACK, fill_opacity=0.6, stroke_opacity=0)
+        self.play(Transform(diagram, diagram.copy().shift(1.5*UP)))
+        self.play(FadeIn(mask))
+        s_A_arrow = Arrow(
+            color=GREEN,
+            buff=0,
+            start=rope_1.get_end(),
+            end=rope_1.get_start()
+        ).shift(0.2*UP)
+        s_B_arrow = Arrow(
+            color=GREEN,
+            buff=0,
+            start=rope_2.get_end(),
+            end=rope_2.get_start()
+        ).shift(0.2*DOWN)
+        s_A_label = MathTex('s_A', color=GREEN).next_to(s_A_arrow, UP, buff=0)
+        s_B_label = MathTex('s_B', color=GREEN).next_to(s_B_arrow, DOWN, buff=0)
+        self.play(ShowCreation(s_A_arrow), Write(s_A_label))
+        self.play(ShowCreation(s_B_arrow), Write(s_B_label))
+        self.wait()
+        cons_of_string_expr = MathTex('s_A', '+', 's_B', '=', 'L_{tot}').shift(DOWN)
+        cons_of_string_expr[0].set_color(GREEN)
+        cons_of_string_expr[2].set_color(GREEN)
+        cons_of_string = Tex('"Conservation of string"', color=YELLOW).scale(0.6).next_to(cons_of_string_expr, DOWN)
+        taking_the_double_deriv = Tex('Take the 2nd derivative...', color=YELLOW).scale(0.6).next_to(cons_of_string_expr, DOWN)
+        self.play(Write(cons_of_string_expr))
+        self.play(Write(cons_of_string, run_time=1.0))
+        self.wait()
+        self.play(ReplacementTransform(cons_of_string, taking_the_double_deriv))
+        dd_cons_of_string_expr = MathTex('a_A', '+', 'a_B', '=', '0').next_to(taking_the_double_deriv, DOWN, buff=0.4)
+        highlight_box = SurroundingRectangle(dd_cons_of_string_expr, buff=0.2)
+        self.play(Write(dd_cons_of_string_expr))
+        self.play(ShowCreation(highlight_box))
+        self.wait()
+        self.play(
+            FadeOut(mask),
+            FadeOut(s_A_arrow),
+            FadeOut(s_A_label),
+            FadeOut(s_B_arrow),
+            FadeOut(s_B_label),
+            FadeOut(taking_the_double_deriv),
+            FadeOut(cons_of_string_expr),
+            FadeOut(highlight_box)
+        )
+        #endregion
+
+        # Put the diagram away and prepare to work on the free body diagrams.
         # Need to copy before the diagram transformation to preserve the scale
         A_fbd = A.copy().move_to(ORIGIN).scale(0.55).shift(3.5*LEFT+1.5*UP)
         B_fbd = B.copy().move_to(ORIGIN).scale(0.55).shift(3.5*RIGHT+1.5*UP)
-
-        dividing_line = Line(start=3*DOWN, end=3*UP, color=GREY)
-
-        self.play(Transform(diagram, diagram.copy().scale(0.3).shift(5.5*LEFT+3*UP)))
+        dividing_line = Line(start=3*DOWN, end=2*UP, color=GREY)
+        self.play(
+            Transform(diagram, diagram.copy().scale(0.3).shift(2.0*LEFT+1.5*UP)),
+            Transform(dd_cons_of_string_expr, dd_cons_of_string_expr.copy().scale(0.8).shift(2*RIGHT+5*UP))
+        )
         self.play(ShowCreation(dividing_line))
         self.wait()
 
-        #region Animate free body diagram for block A
-        self.play(FadeIn(A_fbd))
-        self.wait()
-        P = Arrow(
-            color=RED,
-            buff=0,
-            start=ORIGIN,
-            end=1.5*LEFT,
-            max_stroke_width_to_length_ratio=999,
-            max_tip_length_to_length_ratio=1
-        ).next_to(A_fbd, LEFT, buff=0)
-        P_label = MathTex("P", color=P.get_color()).scale(0.8).next_to(P, LEFT)
-        A_mg = Arrow(
-            color=BLUE,
-            buff=0,
-            start=ORIGIN,
-            end=1.0*DOWN,
-            max_stroke_width_to_length_ratio=999,
-            max_tip_length_to_length_ratio=1
-        ).shift(A_fbd.get_center()+0.1*LEFT)
-        A_mg_label = MathTex("mg", color=A_mg.get_color()).scale(0.8).next_to(A_mg, LEFT, aligned_edge=DOWN)
-        normal_A_1 = Arrow(
-            color=PURPLE,
-            buff=0,
-            start=ORIGIN,
-            end=0.8*UP,
-            max_stroke_width_to_length_ratio=999,
-            max_tip_length_to_length_ratio=1
-        ).next_to(A_fbd, DOWN, buff=0).shift(0.1*RIGHT)
-        normal_A_1_label = MathTex("N_1", color=normal_A_1.get_color()).scale(0.8).next_to(normal_A_1, RIGHT, buff=0, aligned_edge=DOWN)
-        normal_A_2 = Arrow(
-            color=PURPLE,
-            buff=0,
-            start=ORIGIN,
-            end=0.8*DOWN,
-            max_stroke_width_to_length_ratio=999,
-            max_tip_length_to_length_ratio=1
-        ).next_to(A_fbd, UP, buff=0)
-        normal_A_2_label = MathTex("N_2", color=normal_A_2.get_color()).scale(0.8).next_to(normal_A_2, RIGHT, buff=0, aligned_edge=UP)
-        fric_A_1 = Arrow(
-            color=MAROON,
-            buff=0,
-            start=ORIGIN,
-            end=1.5*RIGHT,
-            max_stroke_width_to_length_ratio=999,
-            max_tip_length_to_length_ratio=1
-        ).shift(A_fbd.get_edge_center(DOWN))
-        fric_A_1_label = MathTex("F_{f1}", color=fric_A_1.get_color()).scale(0.8).next_to(fric_A_1, RIGHT)
-        fric_A_2 = Arrow(
-            color=MAROON,
-            buff=0,
-            start=ORIGIN,
-            end=1.5*RIGHT,
-            max_stroke_width_to_length_ratio=999,
-            max_tip_length_to_length_ratio=1
-        ).shift(A_fbd.get_edge_center(UP))
-        fric_A_2_label = MathTex("F_{f2}", color=fric_A_2.get_color()).scale(0.8).next_to(fric_A_2, RIGHT)
+        # #region Animate free body diagram for block A
+        # self.play(FadeIn(A_fbd))
+        # self.wait()
+        # P = Arrow(
+        #     color=RED,
+        #     buff=0,
+        #     start=ORIGIN,
+        #     end=1.5*LEFT,
+        #     max_stroke_width_to_length_ratio=999,
+        #     max_tip_length_to_length_ratio=1
+        # ).next_to(A_fbd, LEFT, buff=0)
+        # P_label = MathTex("P", color=P.get_color()).scale(0.8).next_to(P, LEFT)
+        # A_mg = Arrow(
+        #     color=BLUE,
+        #     buff=0,
+        #     start=ORIGIN,
+        #     end=1.0*DOWN,
+        #     max_stroke_width_to_length_ratio=999,
+        #     max_tip_length_to_length_ratio=1
+        # ).shift(A_fbd.get_center()+0.1*LEFT)
+        # A_mg_label = MathTex("mg", color=A_mg.get_color()).scale(0.8).next_to(A_mg, LEFT, aligned_edge=DOWN)
+        # normal_A_1 = Arrow(
+        #     color=PURPLE,
+        #     buff=0,
+        #     start=ORIGIN,
+        #     end=0.8*UP,
+        #     max_stroke_width_to_length_ratio=999,
+        #     max_tip_length_to_length_ratio=1
+        # ).next_to(A_fbd, DOWN, buff=0).shift(0.1*RIGHT)
+        # normal_A_1_label = MathTex("N_1", color=normal_A_1.get_color()).scale(0.8).next_to(normal_A_1, RIGHT, buff=0, aligned_edge=DOWN)
+        # normal_A_2 = Arrow(
+        #     color=PURPLE,
+        #     buff=0,
+        #     start=ORIGIN,
+        #     end=0.8*DOWN,
+        #     max_stroke_width_to_length_ratio=999,
+        #     max_tip_length_to_length_ratio=1
+        # ).next_to(A_fbd, UP, buff=0)
+        # normal_A_2_label = MathTex("N_2", color=normal_A_2.get_color()).scale(0.8).next_to(normal_A_2, RIGHT, buff=0, aligned_edge=UP)
+        # fric_A_1 = Arrow(
+        #     color=MAROON,
+        #     buff=0,
+        #     start=ORIGIN,
+        #     end=1.5*RIGHT,
+        #     max_stroke_width_to_length_ratio=999,
+        #     max_tip_length_to_length_ratio=1
+        # ).shift(A_fbd.get_edge_center(DOWN))
+        # fric_A_1_label = MathTex("F_{f1}", color=fric_A_1.get_color()).scale(0.8).next_to(fric_A_1, RIGHT)
+        # fric_A_2 = Arrow(
+        #     color=MAROON,
+        #     buff=0,
+        #     start=ORIGIN,
+        #     end=1.5*RIGHT,
+        #     max_stroke_width_to_length_ratio=999,
+        #     max_tip_length_to_length_ratio=1
+        # ).shift(A_fbd.get_edge_center(UP))
+        # fric_A_2_label = MathTex("F_{f2}", color=fric_A_2.get_color()).scale(0.8).next_to(fric_A_2, RIGHT)
 
-        self.play(Write(P), Write(P_label))
-        self.wait()
-        self.play(Write(A_mg), Write(A_mg_label))
-        self.wait()
-        self.play(Write(normal_A_1), Write(normal_A_1_label), Write(normal_A_2), Write(normal_A_2_label))
-        self.wait()
-        self.play(Write(fric_A_1), Write(fric_A_1_label), Write(fric_A_2), Write(fric_A_2_label))
-        self.wait()
-        #endregion
+        # self.play(Write(P), Write(P_label))
+        # self.wait()
+        # self.play(Write(A_mg), Write(A_mg_label))
+        # self.wait()
+        # self.play(Write(normal_A_1), Write(normal_A_1_label), Write(normal_A_2), Write(normal_A_2_label))
+        # self.wait()
+        # self.play(Write(fric_A_1), Write(fric_A_1_label), Write(fric_A_2), Write(fric_A_2_label))
+        # self.wait()
+        # #endregion
 
         # #region 2nd law for block A
         # sum_fx_A = MathTex(
