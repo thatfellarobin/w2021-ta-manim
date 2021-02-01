@@ -187,7 +187,7 @@ class Q2(Scene):
         geom_1_result = Group(geom_1[2:4], geom_1[-1])
         geom_d1_result = Group(geom_d1[2:4], geom_d1[-1])
         geom_d2_result = Group(geom_d2[-3:])
-        geom_1_result_newpos = geom_1_result.copy().to_edge(UP).shift(2*LEFT)
+        geom_1_result_newpos = geom_1_result.copy().to_edge(UP, buff=0.75).shift(2*LEFT)
         geom_d1_result_newpos = geom_d1_result.copy().next_to(geom_1_result_newpos, RIGHT, buff=0.75).shift(0.04*DOWN)
         geom_d2_result_newpos = geom_d2_result.copy().next_to(geom_d1_result_newpos, RIGHT, buff=0.75).shift(0.02*UP)
         self.play(
