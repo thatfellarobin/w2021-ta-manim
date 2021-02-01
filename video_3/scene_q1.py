@@ -448,17 +448,17 @@ class PartB(Scene):
         s_A_arrow = Arrow(
             color=GREEN,
             buff=0,
-            start=rope_1.get_end(),
-            end=rope_1.get_start()
-        ).shift(0.2*UP)
-        s_B_arrow = Arrow(
-            color=GREEN,
-            buff=0,
             start=rope_2.get_end(),
             end=rope_2.get_start()
         ).shift(0.2*DOWN)
-        s_A_label = MathTex('s_A', color=GREEN).next_to(s_A_arrow, UP, buff=0)
-        s_B_label = MathTex('s_B', color=GREEN).next_to(s_B_arrow, DOWN, buff=0)
+        s_B_arrow = Arrow(
+            color=GREEN,
+            buff=0,
+            start=rope_1.get_end(),
+            end=rope_1.get_start()
+        ).shift(0.2*UP)
+        s_A_label = MathTex('s_A', color=GREEN).next_to(s_A_arrow, DOWN, buff=0)
+        s_B_label = MathTex('s_B', color=GREEN).next_to(s_B_arrow, UP, buff=0)
         self.play(ShowCreation(s_A_arrow), Write(s_A_label))
         self.play(ShowCreation(s_B_arrow), Write(s_B_label))
         self.wait()
