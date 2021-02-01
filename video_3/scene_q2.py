@@ -109,7 +109,7 @@ class Q2(Scene):
         #endregion
 
         full_diagram = Group(diagram, mask, r_arrow, r_annot, theta_ref, theta_arrow, theta_annot, h_ref, h_arrow, h_annot)
-        self.play(Transform(full_diagram, full_diagram.copy().scale(0.8).shift(4.5*LEFT+1.5*UP)))
+        self.play(Transform(full_diagram, full_diagram.copy().scale(0.7).shift(4.75*LEFT+1.5*UP)))
         given_theta_dot = MathTex('\\dot{\\theta}=2\\,\\mathrm{rad/s}').scale(0.7).next_to(full_diagram, DOWN, aligned_edge=LEFT)
         given_theta_ddot = MathTex('\\ddot{\\theta}=3\\,\\mathrm{rad/s^2}').scale(0.7).next_to(given_theta_dot, DOWN, aligned_edge=LEFT)
         self.play(
@@ -127,7 +127,7 @@ class Q2(Scene):
             '\\frac{h}{\\cos(\\theta)}',
             '=',
             '0.58\\,\\mathrm{m}'
-        ).scale(0.7).to_edge(UP).shift(1.5*RIGHT)
+        ).scale(0.7).to_edge(UP).shift(1.25*RIGHT)
         geom_1[2:].set_color(YELLOW)
         self.play(Write(geom_1[0]))
         self.wait()
@@ -195,8 +195,200 @@ class Q2(Scene):
             Transform(geom_d1_result, geom_d1_result_newpos),
             Transform(geom_d2_result, geom_d2_result_newpos)
         )
+        self.wait()
         #endregion
 
         #region Free body diagram
+        p_fbd_radius = 0.25
+        arrow_lengths = 1.5
+        def get_particle_edge(angle, radians=False):
+            if not radians:
+                angle = angle * (PI/180)
+            return np.array([p_fbd_radius*np.cos(angle), p_fbd_radius*np.sin(angle), 0])
 
+        particle_fbd = Dot(
+            radius=p_fbd_radius,
+            color=YELLOW
+        ).shift(2.5*RIGHT)
+        r_dir = Line(
+            start=get_particle_edge(60),
+            end=get_particle_edge(60)*(arrow_lengths/p_fbd_radius),
+            color=GREY
+        ).shift(particle_fbd.get_center())
+        r_dir_annot = MathTex('+r', color=YELLOW_B).scale(0.6).next_to(r_dir, direction=r_dir.get_unit_vector(), buff=0.1)
+        theta_dir = Line(
+            start=get_particle_edge(60-90),
+            end=get_particle_edge(60-90)*(arrow_lengths/p_fbd_radius),
+            color=GREY
+        ).shift(particle_fbd.get_center())
+        theta_dir_annot = MathTex('+\\theta', color=YELLOW_B).scale(0.6).next_to(theta_dir, direction=theta_dir.get_unit_vector(), buff=0.1)
+        rod_force_arrow = Arrow(
+            start=get_particle_edge(60+90)*(arrow_lengths/p_fbd_radius),
+            end=get_particle_edge(60+90),
+            color=RED,
+            buff=0.0,
+            stroke_width=6,
+            tip_length=0.3,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(particle_fbd.get_center())
+        rod_force_arrow_annot = MathTex('F_{rod}', color=RED).scale(0.7).next_to(rod_force_arrow, direction=-rod_force_arrow.get_unit_vector(), buff=0.1)
+        gravity_arrow = Arrow(
+            start=get_particle_edge(90)*(arrow_lengths/p_fbd_radius),
+            end=get_particle_edge(90),
+            color=BLUE,
+            buff=0.0,
+            stroke_width=6,
+            tip_length=0.3,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(particle_fbd.get_center())
+        gravity_arrow_annot = MathTex('Mg', color=BLUE).scale(0.7).next_to(gravity_arrow, direction=-gravity_arrow.get_unit_vector(), buff=0.1)
+        slot_normal_force = Arrow(
+            start=get_particle_edge(-90)*(arrow_lengths/p_fbd_radius),
+            end=get_particle_edge(-90),
+            color=PURPLE,
+            buff=0.0,
+            stroke_width=6,
+            tip_length=0.3,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(particle_fbd.get_center())
+        slot_normal_force_annot = MathTex('F_N', color=PURPLE).scale(0.7).next_to(slot_normal_force, direction=-slot_normal_force.get_unit_vector(), buff=0.1)
+
+        self.play(
+            FadeIn(particle_fbd),
+            ShowCreation(r_dir),
+            ShowCreation(theta_dir),
+            Write(r_dir_annot),
+            Write(theta_dir_annot)
+        )
+        self.wait()
+        self.play(
+            ShowCreation(gravity_arrow),
+            Write(gravity_arrow_annot)
+        )
+        self.wait()
+        self.play(
+            ShowCreation(rod_force_arrow),
+            Write(rod_force_arrow_annot)
+        )
+        self.wait()
+        self.play(
+            ShowCreation(slot_normal_force),
+            Write(slot_normal_force_annot)
+        )
+        self.wait()
+
+        fbd = Group(
+            particle_fbd,
+            r_dir,
+            theta_dir,
+            r_dir_annot,
+            theta_dir_annot,
+            gravity_arrow,
+            gravity_arrow_annot,
+            rod_force_arrow,
+            rod_force_arrow_annot,
+            slot_normal_force,
+            slot_normal_force_annot
+        )
+        self.play(
+            Transform(fbd, fbd.copy().scale(0.75).shift(5*LEFT+2*DOWN))
+        )
+        self.wait()
+        #endregion
+
+        #region FBD Math
+        # 2nd law: radial direction
+        sum_fr_0 = MathTex(
+            '\\Sigma F_r',
+            '=',
+            'Ma_r',
+            '=',
+            'F_N\\cos(\\theta)',
+            '-',
+            'Mg\\cos(\\theta)'
+        ).scale(0.7).next_to(geom_d1_result, DOWN, buff=1).shift(0.35*LEFT)
+        sum_fr_1 = MathTex(
+            '\\Sigma F_r',
+            '=',
+            'M(\\ddot{r}-r\\dot{\\theta}^2)',
+            '=',
+            'F_N\\cos(\\theta)',
+            '-',
+            'Mg\\cos(\\theta)'
+        ).scale(0.7)
+        sum_fr_1.shift(sum_fr_0[1].get_center() - sum_fr_1[1].get_center())
+        self.play(Write(sum_fr_0))
+        self.wait()
+        self.play(*[ReplacementTransform(sum_fr_0[i], sum_fr_1[i]) for i in range(len(sum_fr_1))])
+        self.wait()
+        sum_fr_1_rearr = MathTex(
+            'F_N',
+            '=',
+            'Mg',
+            '+',
+            'M\\frac{\\ddot{r}-r\\dot{\\theta}^2}{\\cos(\\theta)}',
+            '=',
+            '6.37\\,\\mathrm{N}'
+        ).scale(0.7)
+        sum_fr_1_rearr[0].set_color(YELLOW)
+        sum_fr_1_rearr[-2:].set_color(YELLOW)
+        sum_fr_1_rearr.shift((sum_fr_1[1].get_center()+0.9*DOWN)-sum_fr_1_rearr[1].get_center())
+        self.play(Write(sum_fr_1_rearr[:5]))
+        self.wait()
+        self.play(Write(sum_fr_1_rearr[5:]))
+        self.wait()
+        ansbox1 = SurroundingRectangle(sum_fr_1_rearr, buff=0.1)
+        self.play(ShowCreation(ansbox1))
+        self.wait()
+
+        # 2nd law: theta direction
+        sum_ft_0 = MathTex(
+            '\\Sigma F_\\theta',
+            '=',
+            'Ma_\\theta',
+            '=',
+            'F_{rod}',
+            '-',
+            'F_N\\sin(\\theta)',
+            '+',
+            'Mg\\sin(\\theta)'
+        ).scale(0.7).next_to(sum_fr_1_rearr, DOWN, aligned_edge=LEFT, buff=0.5).shift(0.15*LEFT)
+        sum_ft_1 = MathTex(
+            '\\Sigma F_\\theta',
+            '=',
+            'M(r\\ddot{\\theta}+2\\dot{r}\\dot{\\theta})',
+            '=',
+            'F_{rod}',
+            '-',
+            'F_N\\sin(\\theta)',
+            '+',
+            'Mg\\sin(\\theta)'
+        ).scale(0.7)
+        sum_ft_1.shift(sum_ft_0[1].get_center() - sum_ft_1[1].get_center())
+        self.play(Write(sum_ft_0))
+        self.wait()
+        self.play(*[ReplacementTransform(sum_ft_0[i], sum_ft_1[i]) for i in range(len(sum_ft_1))])
+        self.wait()
+        sum_ft_1_rearr = MathTex(
+            'F_{rod}',
+            '=',
+            '(F_N-Mg)\\sin(\\theta)',
+            '+',
+            'M(r\\ddot{\\theta}+2\\dot{r}\\dot{\\theta})',
+            '=',
+            '2.93\\,\\mathrm{N}'
+        ).scale(0.7)
+        sum_ft_1_rearr[0].set_color(YELLOW)
+        sum_ft_1_rearr[-2:].set_color(YELLOW)
+        sum_ft_1_rearr.shift((sum_ft_1[1].get_center()+0.9*DOWN)-sum_ft_1_rearr[1].get_center())
+        self.play(Write(sum_ft_1_rearr[:5]))
+        self.wait()
+        self.play(Write(sum_ft_1_rearr[5:]))
+        self.wait()
+        ansbox1 = SurroundingRectangle(sum_ft_1_rearr, buff=0.1)
+        self.play(ShowCreation(ansbox1))
+        self.wait()
         #endregion
