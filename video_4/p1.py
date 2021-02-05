@@ -98,8 +98,41 @@ class P1(Scene):
             stroke_width=8.0
         )
 
+        # Conservation of string items
+        s_A_ref = Line(
+            start=ORIGIN,
+            end=0.5*UP,
+            color=GREEN
+        ).next_to(pulley_mid, direction=UP, buff=0.75)
+        s_B_ref = Line(
+            start=ORIGIN,
+            end=0.5*RIGHT,
+            color=GREEN
+        ).next_to(pulley_mid, direction=RIGHT)
+        s_A_arrow = Arrow(
+            start=string_2.get_end(),
+            end=string_2.get_start(),
+            color=GREEN,
+            buff=0.0,
+            stroke_width=6,
+            tip_length=0.25,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(-string_2.get_end() + s_A_ref.get_center())
+        s_B_arrow = Arrow(
+            start=string_3.get_start(),
+            end=string_3.get_end(),
+            color=GREEN,
+            buff=0.0,
+            stroke_width=6,
+            tip_length=0.25,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(-string_3.get_start() + s_B_ref.get_center())
+        s_A_ref.scale_about_point(scale_factor=2, point=s_A_ref.get_end())
+
         # Group objects and rotate scene
-        diagram = Group(
+        diagram_static = Group(
             string_1,
             string_2,
             string_3,
@@ -113,24 +146,23 @@ class P1(Scene):
             ground_string,
             pulley_mid_support
         )
-        diagram.rotate(angle=60*(PI/180)).move_to(ORIGIN)
+        diagram_stringAnnot = Group(diagram_static, s_A_ref, s_B_ref, s_A_arrow, s_B_arrow)
+        diagram_stringAnnot.rotate(angle=60*(PI/180)).move_to(ORIGIN)
 
         text_A = Tex("A", color=WHITE).move_to(block_A.get_center()).scale(1.2)
         text_B = Tex("B", color=WHITE).move_to(block_B.get_center()).scale(1.2)
 
-        diagram_withlabels = Group(diagram, text_A, text_B)
-
-        self.add(diagram_withlabels)
-        self.wait()
         #endregion
+        self.add(diagram_static, text_A, text_B)
+        self.wait()
 
         #region Annotate angles
         angref_A = Line(
             start=ORIGIN,
-            end=1.5*RIGHT,
+            end=1.25*RIGHT,
             color=YELLOW
-        ).next_to(ground_A.get_end(), RIGHT, buff=0.1)
-        angref_B = angref_A.copy().next_to(ground_B.get_end(), LEFT, buff=0.1)
+        ).next_to(ground_A.get_end(), RIGHT, buff=0.2)
+        angref_B = angref_A.copy().next_to(ground_B.get_end(), LEFT, buff=0.2)
         ang_A = Arc(
             radius=1,
             arc_center=ground_A.get_end(),
@@ -157,9 +189,12 @@ class P1(Scene):
             Write(ang_B_annot)
         )
         self.wait()
+        #endregion
 
-        diagram_withlabels_andangles = Group(
-            diagram_withlabels,
+        diagram_fullyAnnot = Group(
+            diagram_stringAnnot,
+            text_A,
+            text_B,
             angref_A,
             angref_B,
             ang_A,
@@ -167,93 +202,13 @@ class P1(Scene):
             ang_A_annot,
             ang_B_annot
         )
-        #endregion
+
+        # Annotate strings
+        self.play(
+            ShowCreation(s_A_ref),
+            ShowCreation(s_B_ref),
+            ShowCreation(s_A_arrow),
+            ShowCreation(s_B_arrow),
+        )
 
 
-        # A = Group(block_A, text_A)
-        # B = Group(block_B, text_B)
-
-        # floor = Line(start=3.5*LEFT, end=4.25*RIGHT, color=GREY).shift(A.get_edge_center(DOWN)[1]*UP)
-        # wall = Line(start=ORIGIN, end=3.5*UP, color=GREY).shift(floor.get_end())
-
-        # rope_tie_1 = Dot(
-        #     color=YELLOW_A,
-        #     radius=0.16
-        # ).move_to(B.get_edge_center(RIGHT))
-        # rope_tie_2 = Dot(
-        #     color=YELLOW_A,
-        #     radius=0.16
-        # ).move_to(A.get_edge_center(RIGHT))
-
-        # blockmid = (A.get_center() + B.get_center()) / 2
-        # pulley = Circle(
-        #     radius=0.77,
-        #     stroke_width=10.0,
-        #     color=BLUE_E,
-        #     fill_color=BLUE_E_DARK,
-        #     fill_opacity=1.0
-        # ).shift(blockmid + 4*RIGHT)
-
-        # pulley_mount_points = [
-        #     pulley.get_center(),
-        #     np.array([wall.get_center()[0], blockmid[1]+0.4, 0]),
-        #     np.array([wall.get_center()[0], blockmid[1]-0.4, 0])
-        # ]
-        # pulley_mount = Polygon(
-        #     *pulley_mount_points,
-        #     color=GREY_BLUE,
-        #     fill_color=GREY_BLUE_DARK,
-        #     fill_opacity=1.0,
-        #     stroke_width=5.0
-        # )
-        # pulley_axle = Circle(
-        #     arc_center=pulley.get_center(),
-        #     radius=0.2,
-        #     stroke_width=8.0,
-        #     color=BLUE_E,
-        #     fill_color=BLUE_E_DARK,
-        #     fill_opacity=1.0
-        # )
-
-        # rope_1 = Line(
-        #     start=rope_tie_1.get_center(),
-        #     end=pulley.get_edge_center(UP),
-        #     color=YELLOW_E,
-        #     stroke_width=5.0
-        # )
-        # rope_2 = Line(
-        #     start=rope_tie_2.get_center(),
-        #     end=pulley.get_edge_center(DOWN),
-        #     color=YELLOW_E,
-        #     stroke_width=5.0
-        # )
-
-        # pull_force = Arrow(
-        #     color=RED,
-        #     buff=0,
-        #     start=ORIGIN,
-        #     end=2*LEFT
-        # ).next_to(A, LEFT, buff=0)
-        # force_label = MathTex("P", color=pull_force.get_color()).scale(1.4).next_to(pull_force, LEFT)
-
-        # diagram = Group(floor, wall, rope_1, rope_2, rope_tie_1, rope_tie_2, A, B, pulley, pulley_mount, pulley_axle, pull_force, force_label).move_to(ORIGIN)
-        # self.add(diagram)
-        # self.wait()
-        # #endregion
-
-        # #region Talk about pulleys
-        # mask = Rectangle(height=10, width=14, fill_color=BLACK, fill_opacity=0.6, stroke_opacity=0)
-        # self.play(Transform(diagram, diagram.copy().shift(1.5*UP)))
-        # self.play(FadeIn(mask))
-        # s_A_arrow = Arrow(
-        #     color=GREEN,
-        #     buff=0,
-        #     start=rope_2.get_end(),
-        #     end=rope_2.get_start()
-        # ).shift(0.2*DOWN)
-        # s_B_arrow = Arrow(
-        #     color=GREEN,
-        #     buff=0,
-        #     start=rope_1.get_end(),
-        #     end=rope_1.get_start()
-        # ).shift(0.2*UP)
