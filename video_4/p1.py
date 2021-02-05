@@ -341,7 +341,7 @@ class P1(Scene):
         string_sum_grouped = Group(string_sum, string_sum_d)
         self.play(
             Transform(diagram_fullyAnnot, diagram_fullyAnnot.copy().scale(0.6).shift(4*LEFT+1.5*UP)),
-            Transform(string_sum_grouped, string_sum_grouped.copy().scale(0.8).to_edge(LEFT).shift(0.5*RIGHT+3.5*DOWN))
+            Transform(string_sum_grouped, string_sum_grouped.copy().scale(0.8).to_edge(LEFT).shift(0.5*RIGHT+4*DOWN))
         )
         self.wait()
 
@@ -385,13 +385,12 @@ class P1(Scene):
             '\\frac{1}{2g}(W_Av_A^2 + W_Bv_B^2)',
         ).scale(0.6).next_to(energycons_0, DOWN, aligned_edge=LEFT)
         energycons_1_simp[3:].next_to(energycons_1_simp[2], DOWN, aligned_edge=LEFT)
-        self.play(*[Transform(energycons_1[i], energycons_1_simp[i]) for i in range(len(energycons_1))])
+        self.play(*[ReplacementTransform(energycons_1[i], energycons_1_simp[i]) for i in range(len(energycons_1))])
         self.wait()
-        #endregion
 
         #region FBD to solve for N_A and N_B
         block_halfwidth *= 0.6 # account for scaling operation of the full diagram
-        block_A_fbd = block_A.copy().move_to(0.5*RIGHT+1.5*DOWN)
+        block_A_fbd = block_A.copy().move_to(1*RIGHT+1.5*DOWN)
         block_A_fbd_label = text_A.copy().move_to(block_A_fbd.get_center())
         block_B_fbd = block_B.copy().next_to(block_A_fbd, RIGHT, buff=3)
         block_B_fbd_label = text_B.copy().move_to(block_B_fbd.get_center())
@@ -505,6 +504,37 @@ class P1(Scene):
             FadeIn(fbd_FA_label),
             FadeIn(fbd_FB),
             FadeIn(fbd_FB_label)
+        )
+        self.wait()
+        #endregion
+
+        energycons_2 = MathTex(
+            '-\\mu_k(W_A\\cos(\\theta_1))\\frac{d}{2} - \\mu_k(W_B\\cos(\\theta_2))d',
+            '=',
+            'W_Bd\\sin(\\theta_2) - W_A\\frac{d}{2}\\sin(\\theta_1)',
+            '+',
+            '\\frac{1}{2g}(W_Av_A^2 + W_Bv_B^2)',
+        ).scale(0.6).next_to(energycons_0, DOWN, aligned_edge=LEFT)
+        energycons_2[1:].next_to(energycons_2[0], DOWN, aligned_edge=LEFT).shift(0.2*RIGHT)
+        self.play(*[ReplacementTransform(energycons_1_simp[i], energycons_2[i]) for i in range(len(energycons_1_simp))])
+        self.wait()
+        hlbox = SurroundingRectangle(energycons_2, buff=0.15)
+        hlbox2 = SurroundingRectangle(string_sum_d, buff=0.15)
+        self.play(
+            ShowCreation(hlbox),
+            ShowCreation(hlbox2)
+        )
+        self.wait()
+
+        v_Afinal = MathTex('v_A=0.233\\,\\mathrm{m/s}').next_to(string_sum_grouped, DOWN, aligned_edge=LEFT, buff=0.5)
+        v_Bfinal = MathTex('v_B=-0.466\\,\\mathrm{m/s}').next_to(v_Afinal, DOWN, aligned_edge=LEFT)
+        v_final = Group(v_Afinal, v_Bfinal)
+        hlbox_final = SurroundingRectangle(v_final, buff=0.2)
+        v_final_boxed = Group(v_final, hlbox_final).align_to(hlbox2, LEFT)
+        self.play(
+            FadeIn(v_final),
+            Transform(hlbox.copy(), hlbox_final),
+            Transform(hlbox2.copy(), hlbox_final)
         )
         self.wait()
         #endregion
