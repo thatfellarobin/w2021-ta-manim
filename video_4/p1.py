@@ -191,6 +191,36 @@ class P1(Scene):
         self.wait()
         #endregion
 
+        #region Discuss conservation of string
+        # Annotate strings
+        s_A_annot = MathTex('s_A', color=GREEN).scale(0.8).move_to(s_A_arrow.get_center()).shift(0.5*s_A_arrow.copy().rotate(-PI/2).get_unit_vector())
+        s_B_annot = MathTex('s_B', color=GREEN).scale(0.8).move_to(s_B_arrow.get_center()).shift(0.5*s_B_arrow.copy().rotate(PI/2).get_unit_vector())
+        self.play(
+            ShowCreation(s_A_ref),
+            ShowCreation(s_B_ref),
+            ShowCreation(s_A_arrow),
+            ShowCreation(s_B_arrow),
+        )
+        self.play(
+            Write(s_A_annot),
+            Write(s_B_annot)
+        )
+        self.wait()
+        string_sum = MathTex('L_{tot}', '=', '2', 's_A', '+', 's_B').scale(0.9).shift(3.5*RIGHT + 3*UP)
+        self.play(Write(string_sum))
+        self.wait()
+        string_sum_d = MathTex('0', '=', '2', 'v_A', '+', 'v_B').scale(0.9)
+        string_sum_d.shift((string_sum[1].get_center()+0.75*DOWN)-string_sum_d[1].get_center())
+        self.play(Write(string_sum_d))
+        self.wait()
+        # briefly explain why we can leave out certain sections of string
+        string_1_subsec = string_1.copy().scale_about_point(point=string_1.get_end(), scale_factor=(1/3))
+        for _ in range(3):
+            self.play(CircleIndicate(string_1_subsec))
+        self.wait()
+
+        #endregion
+
         diagram_fullyAnnot = Group(
             diagram_stringAnnot,
             text_A,
@@ -200,15 +230,17 @@ class P1(Scene):
             ang_A,
             ang_B,
             ang_A_annot,
-            ang_B_annot
+            ang_B_annot,
+            s_A_annot,
+            s_B_annot
         )
+        string_sum_grouped = Group(string_sum, string_sum_d)
 
-        # Annotate strings
+        # At this point, should explain how to identify energy problem?
+
+        # Prepare to do math
         self.play(
-            ShowCreation(s_A_ref),
-            ShowCreation(s_B_ref),
-            ShowCreation(s_A_arrow),
-            ShowCreation(s_B_arrow),
+            Transform(diagram_fullyAnnot, diagram_fullyAnnot.copy().scale(0.8).shift(3.5*LEFT+1*UP)),
+            Transform(string_sum_grouped, string_sum_grouped.copy().scale(0.8).to_edge(LEFT).shift(0.5*RIGHT+5*DOWN))
         )
-
-
+        self.wait()
