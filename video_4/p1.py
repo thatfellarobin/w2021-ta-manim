@@ -47,6 +47,7 @@ class P1(Scene):
             end=pulley_A.get_center(),
             color=GOLD_E
         )
+        block_A_assembly = Group(pulley_A, pulley_tie_A, block_A)
         string_1 = Line(
             start=pulley_A.get_edge_center(UP),
             end=pulley_A.get_edge_center(UP) + 3*RIGHT,
@@ -136,10 +137,8 @@ class P1(Scene):
             string_1,
             string_2,
             string_3,
-            pulley_A,
             pulley_mid,
-            pulley_tie_A,
-            block_A,
+            block_A_assembly,
             block_B,
             ground_A,
             ground_B,
@@ -151,6 +150,8 @@ class P1(Scene):
 
         text_A = Tex("A", color=WHITE).move_to(block_A.get_center()).scale(1.2)
         text_B = Tex("B", color=WHITE).move_to(block_B.get_center()).scale(1.2)
+        block_A_assembly.add(text_A)
+        block_B_assembly = Group(block_B, text_B)
 
         #endregion
         self.add(diagram_static, text_A, text_B)
@@ -238,9 +239,83 @@ class P1(Scene):
 
         # At this point, should explain how to identify energy problem?
 
+        #region Animate the motion d
+        base_string_1 = string_1.get_end()
+        base_string_2 = string_2.get_end()
+        base_string_3 = string_3.get_start()
+        oglength_string_1 = string_1.get_length()
+        oglength_string_2 = string_2.get_length()
+        oglength_string_3 = string_3.get_length()
+        ogposition_block_A = block_A_assembly.get_center()
+        block_halfwidth = block_B.copy().rotate(30*(PI/180)).get_width() / 2
+
+        def update_string_3(string):
+            string_tip = block_B.get_center() + block_halfwidth*np.array([np.cos(150*(PI/180)), np.sin(150*(PI/180)), 0])
+            newstring = Line(
+                start=base_string_3,
+                end=string_tip,
+                color=YELLOW_E
+            )
+            string.become(newstring)
+        def update_string_2(string):
+            dB = string_3.get_length() - oglength_string_3
+            newlength = oglength_string_2 - (dB/2)
+            string_tip = base_string_2 - newlength * string.get_unit_vector()
+            newstring = Line(
+                start=string_tip,
+                end=base_string_2,
+                color=YELLOW_E
+            )
+            string.become(newstring)
+        def update_string_1(string):
+            dB = string_3.get_length() - oglength_string_3
+            newlength = oglength_string_1 - (dB/2)
+            string_tip = base_string_1 - newlength * string.get_unit_vector()
+            newstring = Line(
+                start=string_tip,
+                end=base_string_1,
+                color=YELLOW_E
+            )
+            string.become(newstring)
+        def update_block_A_assembly(assem):
+            ds = (string_3.get_length() - oglength_string_3)/2
+            newposition = ogposition_block_A + ds*np.array([np.cos(60*(PI/180)), np.sin(60*(PI/180)), 0])
+            assem.shift(newposition - assem.get_center())
+        def update_sa(arrow):
+            arrow.scale_about_point(point=arrow.get_start(), scale_factor=string_2.get_length()/arrow.get_length())
+        def update_sb(arrow):
+            arrow.scale_about_point(point=arrow.get_start(), scale_factor=string_3.get_length()/arrow.get_length())
+
+        string_1.add_updater(update_string_1)
+        string_2.add_updater(update_string_2)
+        string_3.add_updater(update_string_3)
+        block_A_assembly.add_updater(update_block_A_assembly)
+        s_A_arrow.add_updater(update_sa)
+        s_B_arrow.add_updater(update_sb)
+
+        for _ in range(10):
+            self.play(
+                Transform(
+                    block_B_assembly,
+                    block_B_assembly.copy().shift(1.5*np.array([np.cos(150*(PI/180)), np.sin(150*(PI/180)), 0])),
+                    rate_func=there_and_back,
+                    run_time=3
+                )
+            )
+        self.wait()
+
+        string_1.clear_updaters()
+        string_2.clear_updaters()
+        string_3.clear_updaters()
+        block_A_assembly.clear_updaters()
+        s_A_arrow.clear_updaters()
+        s_B_arrow.clear_updaters()
+        #endregion
+
         # Prepare to do math
         self.play(
             Transform(diagram_fullyAnnot, diagram_fullyAnnot.copy().scale(0.8).shift(3.5*LEFT+1*UP)),
             Transform(string_sum_grouped, string_sum_grouped.copy().scale(0.8).to_edge(LEFT).shift(0.5*RIGHT+5*DOWN))
         )
         self.wait()
+
