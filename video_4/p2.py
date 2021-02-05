@@ -12,9 +12,9 @@ class T4P2(Scene):
             y = DIM_H*(1 - (x**2/DIM_B**2))
             return DIAGRAM_SCALE * np.array([x, y, 0])
         def path_function_deriv_dir(x):
-            dy_dx = (-2 * DIM_H * x) / DIM_B
+            dy_dx = (-2 * DIM_H * x) / DIM_B**2
             theta = np.arctan(dy_dx)
-            return np.array([np.cos(theta), np.sin(theta), 0])
+            return (np.array([np.cos(theta), np.sin(theta), 0]), theta)
 
         # Scene objects
         x_axis = Line(start=ORIGIN, end=5*RIGHT, color=GRAY)
@@ -63,7 +63,7 @@ class T4P2(Scene):
         )
         self.wait()
 
-        y_expr = MathTex('y', '=', 'h(1-x^2/b^2)', color=PURPLE).scale(0.7).to_corner(UP+LEFT)
+        y_expr = MathTex('y', '=', 'h(1-x^2/b^2)', color=PURPLE).scale(0.75).to_corner(UP+LEFT)
         self.play(Write(y_expr))
         self.wait()
 
@@ -80,7 +80,7 @@ class T4P2(Scene):
             '\\Delta E_g',
             '+',
             '\\Delta E_k'
-        ).scale(0.7).to_edge(UP, buff=1.5).shift(1*RIGHT)
+        ).scale(0.7).to_edge(UP, buff=1.75)
         energycons_1 = MathTex(
             '0',
             '=',
@@ -101,24 +101,99 @@ class T4P2(Scene):
         self.wait()
 
         # Free body diagram
-        car_fbd = car.copy().move_to(2*RIGHT+2*DOWN)
+        car_fbd = car.copy().move_to(0.6*DOWN)
+        theta_ref = Line(
+            start=car_fbd.get_center(),
+            end=car_fbd.get_center()+RIGHT,
+            color=GREY
+        )
+        theta_arc = Arc(
+            radius=0.7,
+            arc_center=car_fbd.get_center(),
+            start_angle=0,
+            angle=path_function_deriv_dir(DIM_B)[1],
+            color=YELLOW
+        ).add_tip(tip_length=0.2)
+        theta_label = MathTex('\\theta_B', color=YELLOW).scale(0.7).next_to(theta_arc, RIGHT)
         t_line = Line(
             start=car_fbd.get_center(),
-            end=car_fbd.get_center() + 1.5*path_function_deriv_dir(DIM_B),
-            color=GREY
+            end=car_fbd.get_center() + 1.0*path_function_deriv_dir(DIM_B)[0],
+            color=YELLOW_A
         )
         t_line_label = MathTex('+t', color=YELLOW_A).scale(0.7).next_to(t_line.get_end(), RIGHT, buff=0.1)
         n_line = Line(
             start=car_fbd.get_center(),
-            end=car_fbd.get_center() + 1.5*t_line.copy().rotate(PI/2).get_unit_vector(),
-            color=GREY
+            end=car_fbd.get_center() + 1.0*t_line.copy().rotate(PI/2).get_unit_vector(),
+            color=YELLOW_A
         )
         n_line_label = MathTex('-n', color=YELLOW_A).scale(0.7).next_to(n_line.get_end(), RIGHT, buff=0.1)
+        gravity_arrow = Arrow(
+            start=car_fbd.get_center(),
+            end=car_fbd.get_center()+DOWN,
+            color=BLUE,
+            buff=0.0,
+            stroke_width=6,
+            tip_length=0.2,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        gravity_arrow_label = MathTex('mg', color=BLUE).scale(0.7).next_to(gravity_arrow.get_end(), DOWN, buff=0.1)
+        N_arrow = Arrow(
+            start=car_fbd.get_center()-n_line.get_unit_vector(),
+            end=car_fbd.get_center()-0.12*n_line.get_unit_vector(),
+            color=PURPLE,
+            buff=0.0,
+            stroke_width=6,
+            tip_length=0.2,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        N_arrow_label = MathTex('N_B', color=PURPLE).scale(0.7).next_to(N_arrow.get_start(), LEFT, buff=0.1)
+
+        fbd = Group(
+            car_fbd,
+            theta_ref,
+            theta_arc,
+            theta_label,
+            t_line,
+            t_line_label,
+            n_line,
+            n_line_label,
+            gravity_arrow,
+            gravity_arrow_label,
+            N_arrow,
+            N_arrow_label
+        )
+
         self.play(
+            ShowCreation(theta_ref),
+            ShowCreation(theta_arc),
+            Write(theta_label),
             ShowCreation(t_line),
             Write(t_line_label),
             ShowCreation(n_line),
             Write(n_line_label),
             FadeIn(car_fbd)
         )
+        self.wait()
+        self.play(
+            Write(gravity_arrow),
+            Write(gravity_arrow_label),
+            Write(N_arrow),
+            Write(N_arrow_label)
+        )
+        self.wait()
+
+        # Normal accel and stuff
+        normal_accel = MathTex(
+            'a_{nB}',
+            '=',
+            'mg\\cos(\\theta_B) - N_B',
+            '=',
+            'v_B^2/\\rho'
+        ).scale(0.8).next_to(fbd, RIGHT, buff=0.8, aligned_edge=UP)
+        normal_accel[3:].next_to(normal_accel[1:], DOWN, aligned_edge=LEFT)
+        self.play(Write(normal_accel[:3]))
+        self.wait()
+        self.play(Write(normal_accel[3:]))
         self.wait()
