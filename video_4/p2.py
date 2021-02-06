@@ -63,7 +63,7 @@ class T4P2(Scene):
         )
         self.wait()
 
-        y_expr = MathTex('y', '=', 'h(1-x^2/b^2)', color=PURPLE).scale(0.75).to_corner(UP+LEFT)
+        y_expr = MathTex('y', '=', 'h(1-x^2/b^2)', color=PURPLE).scale(0.7).to_corner(UP+LEFT)
         self.play(Write(y_expr))
         self.wait()
 
@@ -99,9 +99,15 @@ class T4P2(Scene):
         self.play(Write(v_B))
         self.play(ShowCreation(ansbox1))
         self.wait()
+        ans1 = Group(v_B, ansbox1)
+        self.play(
+            FadeOut(energycons_0),
+            FadeOut(energycons_1),
+            Transform(ans1, ans1.copy().shift(1.5*LEFT+UP))
+        )
 
         # Free body diagram
-        car_fbd = car.copy().move_to(0.6*DOWN)
+        car_fbd = car.copy().move_to(1*LEFT+0.5*UP)
         theta_ref = Line(
             start=car_fbd.get_center(),
             end=car_fbd.get_center()+RIGHT,
@@ -190,10 +196,48 @@ class T4P2(Scene):
             '=',
             'mg\\cos(\\theta_B) - N_B',
             '=',
-            'v_B^2/\\rho'
-        ).scale(0.8).next_to(fbd, RIGHT, buff=0.8, aligned_edge=UP)
+            'v_B^2/\\rho_B'
+        ).scale(0.75).next_to(fbd, RIGHT, buff=0.8, aligned_edge=UP).shift(2*UP)
         normal_accel[3:].next_to(normal_accel[1:], DOWN, aligned_edge=LEFT)
         self.play(Write(normal_accel[:3]))
         self.wait()
         self.play(Write(normal_accel[3:]))
         self.wait()
+        question = Tex('we need $\\theta_B$ and $\\rho_B$', color=YELLOW).scale(0.6).next_to(normal_accel, DOWN, aligned_edge=LEFT)
+        self.play(Write(question))
+        self.wait()
+        theta_expr = MathTex('\\theta(x)=\\mathrm{tan}^{-1}(y^\\prime(x))').scale(0.75).next_to(question, DOWN, aligned_edge=LEFT)
+        rho_expr = MathTex('\\rho(x)', '=', '\\frac{\\sqrt{\\left(1+y^{\\prime}(x)^2\\right)^3}}{y^{\\prime\\prime}(x)}').scale(0.75).next_to(theta_expr, DOWN, aligned_edge=LEFT)
+        self.play(Write(theta_expr))
+        self.play(Write(rho_expr))
+        self.wait()
+        y_prime_expr = MathTex('y^\\prime(','x',')=-2h','x','/','b^2', color=PURPLE).scale(0.7).next_to(y_expr, RIGHT, buff=0.75)
+        y_prime2_expr = MathTex('y^{\\prime\\prime}(','x',')=-2h/b^2', color=PURPLE).scale(0.7).next_to(y_prime_expr, RIGHT, buff=0.75)
+        self.play(Write(y_prime_expr))
+        self.wait()
+        self.play(Write(y_prime2_expr))
+        self.wait()
+        self.play(FadeOut(question))
+        self.wait()
+        y_prime_expr_sub = MathTex('y^\\prime(','b',')=-2h','/','b', color=PURPLE).scale(0.7)
+        y_prime_expr_sub.shift(y_prime_expr[0].get_center() - y_prime_expr_sub[0].get_center())
+        y_prime2_expr_sub = MathTex('y^{\\prime\\prime}(','b',')=-2h/b^2', color=PURPLE).scale(0.7).next_to(y_prime_expr, RIGHT, buff=0.5)
+        y_prime_expr_sub.shift(y_prime2_expr[0].get_center() - y_prime2_expr_sub[0].get_center())
+        self.play(
+            ReplacementTransform(y_prime_expr[0], y_prime_expr_sub[0]),
+            ReplacementTransform(y_prime_expr[1], y_prime_expr_sub[1]),
+            ReplacementTransform(y_prime_expr[2], y_prime_expr_sub[2]),
+            FadeOut(y_prime_expr[3]),
+            ReplacementTransform(y_prime_expr[4], y_prime_expr_sub[3]),
+            ReplacementTransform(y_prime_expr[5], y_prime_expr_sub[4]),
+            *[ReplacementTransform(y_prime2_expr[i], y_prime2_expr_sub[i]) for i in range(len(y_prime2_expr))]
+        )
+        self.wait()
+
+        normal_ans = MathTex('N_B=151.7\\,\\mathrm{N}').scale(0.8).next_to(rho_expr, DOWN, buff=1.5)
+        ansbox2 = SurroundingRectangle(normal_ans, buff=0.2)
+        ans2 = Group(normal_ans, ansbox2).next_to(rho_expr, DOWN, aligned_edge=LEFT)
+        self.play(Write(normal_ans))
+        self.play(ShowCreation(ansbox2))
+        self.wait()
+
