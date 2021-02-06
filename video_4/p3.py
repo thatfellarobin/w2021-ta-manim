@@ -25,8 +25,10 @@ class T4P3(Scene):
 
         path = path_1.copy()
         path.add_points_as_corners(path_2.get_all_points())
+        path_partial = path.copy()
         path.add_points_as_corners(path_3.get_all_points())
         path.set_color(PURPLE_A)
+        path_partial.shift(5.5*LEFT+2*DOWN)
         path.shift(5.5*LEFT+2*DOWN)
 
         ground = Line(
@@ -58,7 +60,7 @@ class T4P3(Scene):
         rho_annot = MathTex('\\rho', color=GREEN).scale(0.7).next_to(rho_arrow.get_end(), np.array([np.cos(PI/4), np.sin(PI/4), 0]), buff=0.15)
 
         self.play(ShowCreation(ground))
-        self.play(ShowCreation(path), run_time=3)
+        self.play(ShowCreation(path), run_time=2)
         self.wait()
         self.play(
             Write(h_arrow),
@@ -69,11 +71,28 @@ class T4P3(Scene):
         self.wait()
 
         car = Dot(
-            point=path.get_end()+3*UP,
+            point=path.get_start(),
             radius=0.15,
-            color=GREEN
+            color=TEAL
         )
-        self.play(FadeIn(car))
+        vel_init_arrow = Arrow(
+            start=car.get_center()+0.15*RIGHT,
+            end=car.get_center()+1.25*RIGHT,
+            color=RED,
+            buff=0,
+            stroke_width=7,
+            tip_length=0.2,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        vel_init_arrow_label = MathTex('v_0', color=RED).scale(0.8).next_to(vel_init_arrow.get_end(), RIGHT, buff=0.15)
+        self.play(
+            FadeIn(car),
+            Write(vel_init_arrow),
+            Write(vel_init_arrow_label)
+        )
+        self.wait()
+        self.play(MoveAlongPath(car, path_partial, run_time=3))
         for _ in range(2):
             self.play(Flash(car))
         self.wait()
@@ -177,7 +196,43 @@ class T4P3(Scene):
         )
         self.wait()
         accel_remain = Group(accel[3], accel[4], accel[8])
+        self.play(
+            Transform(accel_remain, accel_remain.copy().to_corner(UP+LEFT, buff=0.75).shift(0.5*RIGHT)),
+            FadeOut(contact_def)
+        )
         hlbox1 = SurroundingRectangle(accel_remain, buff=0.15)
-        self.play(Transform(accel_remain, accel_remain.copy().to_corner(UP+LEFT, buff=0.75)))
         self.play(ShowCreation(hlbox1))
+        self.wait()
+
+        # Energy equation
+        energy_0 = MathTex(
+            '\\Delta W',
+            '=',
+            '\\Delta E_g',
+            '+',
+            '\\Delta E_k'
+        ).scale(0.7).next_to(accel_remain, RIGHT, buff=1)
+        energy_1 = MathTex(
+            '0',
+            '=',
+            'mg(2\\rho-h)',
+            '+',
+            '\\frac{1}{2}m(v_1^2-v_0^2)',
+            '\\Rightarrow',
+            'v_1=\\sqrt{v_0^2+2g(h-2\\rho)}'
+        ).scale(0.7)
+        energy_1.shift(energy_0[1].get_center()-energy_1[1].get_center())
+        hlbox2 = SurroundingRectangle(energy_1[-1], buff=0.1)
+        self.play(Write(energy_0))
+        self.wait()
+        self.play(*[ReplacementTransform(energy_0[i], energy_1[i]) for i in range(len(energy_0))])
+        self.wait()
+        self.play(Write(energy_1[-2:]))
+        self.play(ShowCreation(hlbox2))
+        self.wait()
+
+        ans = MathTex('v_0=\\sqrt{g(5\\rho-2h)}').scale(0.9).shift(1.25*UP)
+        ansbox=SurroundingRectangle(ans, buff=0.2)
+        self.play(Write(ans))
+        self.play(ShowCreation(ansbox))
         self.wait()
