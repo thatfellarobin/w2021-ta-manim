@@ -27,7 +27,7 @@ class T4P3(Scene):
         path.add_points_as_corners(path_2.get_all_points())
         path.add_points_as_corners(path_3.get_all_points())
         path.set_color(PURPLE_A)
-        path.shift(5*LEFT+2*DOWN)
+        path.shift(5.5*LEFT+2*DOWN)
 
         ground = Line(
             start=path.get_start()+4*DOWN+0.25*LEFT,
@@ -76,5 +76,108 @@ class T4P3(Scene):
         self.play(FadeIn(car))
         for _ in range(2):
             self.play(Flash(car))
+        self.wait()
 
-        pass
+        vel_arrow = Arrow(
+            start=car.get_center()+0.15*LEFT,
+            end=car.get_center()+1.25*LEFT,
+            color=RED,
+            buff=0,
+            stroke_width=7,
+            tip_length=0.2,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        vel_arrow_label = MathTex('v_1', color=RED).scale(0.8).next_to(vel_arrow.get_end(), LEFT, buff=0.15)
+        self.play(
+            Write(vel_arrow),
+            Write(vel_arrow_label)
+        )
+        self.wait()
+
+        # Free body diagram
+        car_fbd = car.copy().move_to(5*RIGHT+1*DOWN)
+        tan_dir = Line(
+            start=car_fbd.get_center(),
+            end=car_fbd.get_center()+LEFT,
+            color=YELLOW_A,
+            stroke_width=4,
+        )
+        tan_dir_label = MathTex('+t', color=YELLOW_A).scale(0.8).next_to(tan_dir.get_end(), LEFT, buff=0.1)
+        norm_dir = Line(
+            start=car_fbd.get_center(),
+            end=car_fbd.get_center()+1.5*DOWN,
+            color=YELLOW_A,
+            stroke_width=4,
+        )
+        norm_dir_label = MathTex('+n', color=YELLOW_A).scale(0.8).next_to(norm_dir.get_end(), DOWN, buff=0.1)
+        N_arrow = Arrow(
+            start=car_fbd.get_center()+1.15*UP,
+            end=car_fbd.get_center()+0.15*UP,
+            color=PURPLE,
+            buff=0,
+            stroke_width=7,
+            tip_length=0.2,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        N_arrow_label = MathTex('N', color=PURPLE).scale(0.8).next_to(N_arrow.get_start(), UP, buff=0.1)
+        mg_arrow = Arrow(
+            start=car_fbd.get_center()+0.15*DOWN,
+            end=car_fbd.get_center()+1.15*DOWN,
+            color=BLUE,
+            buff=0,
+            stroke_width=7,
+            tip_length=0.2,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        mg_arrow_label = MathTex('mg', color=BLUE).scale(0.8).next_to(mg_arrow.get_end(), RIGHT, buff=0.2)
+        self.play(
+            ShowCreation(tan_dir),
+            ShowCreation(norm_dir),
+            Write(tan_dir_label),
+            Write(norm_dir_label),
+            FadeIn(car_fbd),
+            Write(N_arrow),
+            Write(N_arrow_label),
+            Write(mg_arrow),
+            Write(mg_arrow_label)
+        )
+        self.wait()
+
+        # normal acceleration
+        accel = MathTex(
+            'ma_n',
+            '=',
+            'm',
+            '\\frac{v_1^2}{\\rho}',
+            '=',
+            'N',
+            '+',
+            'm',
+            'g'
+        ).scale(0.8).to_corner(UP+LEFT, buff=0.75)
+        contact_def = Tex('Contact is lost if $N=0$', color=YELLOW).scale(0.7).next_to(accel, DOWN, aligned_edge=LEFT)
+
+        self.play(Write(accel))
+        self.wait()
+        self.play(Write(contact_def))
+        self.wait()
+        self.play(
+            Transform(accel[7:], accel[7:].copy().next_to(accel[4], RIGHT, buff=0.18).shift(0.05*DOWN)),
+            FadeOut(accel[5:7]),
+            FadeOut(accel[:2])
+        )
+        self.wait()
+        self.play(
+            Transform(accel[8], accel[8].copy().next_to(accel[4], RIGHT, buff=0.18)),
+            FadeOut(accel[2]),
+            FadeOut(accel[7])
+        )
+        self.wait()
+        accel_remain = Group(accel[3], accel[4], accel[8])
+        hlbox1 = SurroundingRectangle(accel_remain, buff=0.15)
+        self.play(Transform(accel_remain, accel_remain.copy().to_corner(UP+LEFT, buff=0.75)))
+        self.play(ShowCreation(hlbox1))
+        self.wait()
