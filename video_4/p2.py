@@ -197,7 +197,7 @@ class T4P2(Scene):
             'mg\\cos(\\theta_B) - N_B',
             '=',
             'v_B^2/\\rho_B'
-        ).scale(0.75).next_to(fbd, RIGHT, buff=0.8, aligned_edge=UP).shift(2*UP)
+        ).scale(0.75).next_to(fbd, RIGHT, buff=0.8, aligned_edge=UP).shift(1.5*UP)
         normal_accel[3:].next_to(normal_accel[1:], DOWN, aligned_edge=LEFT)
         self.play(Write(normal_accel[:3]))
         self.wait()
