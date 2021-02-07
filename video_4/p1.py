@@ -346,7 +346,7 @@ class P1(Scene):
         self.wait()
 
         #region explain different energy components:
-        E_g = MathTex('E_g=mg\\Delta h', color=YELLOW).scale(0.7)
+        E_g = MathTex('E_g=mgh', color=YELLOW).scale(0.7)
         E_k = MathTex('E_k=\\frac{1}{2}mv^2', color=YELLOW).scale(0.7)
         Work = MathTex('Work=Fs', color=YELLOW).scale(0.7)
         energy_primatives = VGroup(E_g, E_k, Work).arrange(buff=0.5).next_to(diagram_fullyAnnot, RIGHT, aligned_edge=UP, buff=0.75)
@@ -374,8 +374,17 @@ class P1(Scene):
             '+',
             '\\frac{1}{2}\\frac{W_A}{g}v_A^2 + \\frac{1}{2}\\frac{W_B}{g}v_B^2'
         ).scale(0.6).next_to(energycons_0, DOWN, aligned_edge=LEFT)
+        hlbox = SurroundingRectangle(energycons_1[0], buff=0.1)
         energycons_1[3:].next_to(energycons_1[2], DOWN, aligned_edge=LEFT)
         self.play(Write(energycons_1))
+        self.wait()
+        self.play(ShowCreation(hlbox))
+        self.wait()
+        self.play(Transform(hlbox, SurroundingRectangle(energycons_1[2], buff=0.1)))
+        self.wait()
+        self.play(Transform(hlbox, SurroundingRectangle(energycons_1[4], buff=0.1)))
+        self.wait()
+        self.play(FadeOut(hlbox))
         self.wait()
         energycons_1_simp = MathTex(
             '-\\mu_kN_A\\frac{d}{2} - \\mu_kN_Bd',
