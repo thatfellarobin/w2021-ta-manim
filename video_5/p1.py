@@ -4,10 +4,11 @@ import numpy as np
 GOLD_DARK = '#5c4326'
 EVERGREEN = '#077319'
 BROWN = '#8f4a04'
+MED_DARK_GREY = '#666666'
 
 class T5P1(Scene):
     def construct(self):
-        attribution = Tex('Robin Liu, 2021', color=GREY).scale(0.4).to_corner(DOWN+RIGHT, buff=0.2)
+        attribution = Tex('Robin Liu, 2021. www.robinliu.me', color=MED_DARK_GREY).scale(0.4).to_corner(DOWN+RIGHT, buff=0.2)
         self.add(attribution)
 
         #region diagram objects
@@ -70,13 +71,8 @@ class T5P1(Scene):
         # copy some stuff for later
         block_initpos = block.copy().set_opacity(0.3)
         diagram_block_B = diagram_block.copy()
-        trees_B = trees.copy()
 
         #region From A's perspective
-        path_A = Line(
-            start=ORIGIN,
-            end=7.5*RIGHT
-        ).set_opacity(0).shift(diagram_block.get_center())
         d_arrow = DoubleArrow(
             start=ORIGIN,
             end=7.5*RIGHT,
@@ -89,7 +85,7 @@ class T5P1(Scene):
         ).shift(block.get_edge_center(LEFT)).shift(DOWN)
         d_label = MathTex('d', color=BLUE).scale(0.8).next_to(d_arrow, DOWN)
 
-        self.play(MoveAlongPath(diagram_block, path_A, rate_func=rate_functions.ease_in_quad, run_time=2))
+        self.play(Transform(diagram_block, diagram_block.copy().shift(7.5*RIGHT), rate_func=rate_functions.ease_in_quad, run_time=2))
         self.play(FadeIn(block_initpos))
         self.wait()
         self.play(
@@ -108,7 +104,7 @@ class T5P1(Scene):
         energy_1 = MathTex(
             'Fd',
             '=',
-            '\\frac{1}{2}m(v_{1A}^2-v_0^2)'
+            '\\frac{1}{2}M(v_{1A}^2-v_0^2)'
         ).scale(0.9)
         energy_1.shift(energy_0[1].get_center()-energy_1[1].get_center())
         self.play(Write(energy_0))
@@ -118,7 +114,7 @@ class T5P1(Scene):
         self.play(FadeOut(energy_0[2:4]))
         self.play(ReplacementTransform(energy_0[4], energy_1[2]))
         self.wait()
-        v1A = MathTex('v_{1A} = 6.08\\,\\mathrm{m/s}').scale(0.9).shift(UP)
+        v1A = MathTex('v_{1A} = 6.08\\,\\mathrm{m/s}').scale(0.9).next_to(energy_1, DOWN, buff=0.75)
         hlbox_v1A = SurroundingRectangle(v1A, buff=0.15)
         self.play(Write(v1A))
         self.play(ShowCreation(hlbox_v1A))
@@ -169,8 +165,90 @@ class T5P1(Scene):
         self.play(
             FadeOut(block_initpos),
             FadeOut(d_arrow),
-            FadeOut(d_label)
+            FadeOut(d_label),
+            Transform(diagram_block, diagram_block_B)
         )
+        self.wait()
+        # Animate the block moving forward in B's frame
+        self.play(
+            Transform(trees, trees.copy().shift(3*LEFT), rate_func=linear, run_time=2),
+            Transform(diagram_block, diagram_block.copy().shift(4.75*RIGHT), rate_func=rate_functions.ease_in_quad, run_time=2)
+        )
+        self.wait()
+        self.play(FadeIn(block_initpos))
+        self.wait()
+        d_arrow = DoubleArrow(
+            start=block_initpos.get_edge_center(LEFT),
+            end=block.get_edge_center(LEFT),
+            color=BLUE,
+            buff=0.0,
+            stroke_width=8,
+            tip_length=0.3,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(DOWN)
+        d_label = MathTex('d^\\prime', color=BLUE).scale(0.8).next_to(d_arrow, DOWN)
+        d_relate = MathTex('d^\\prime<d').scale(0.8).next_to(d_label, RIGHT, buff=1)
+        self.play(
+            FadeIn(d_arrow),
+            Write(d_label)
+        )
+        self.wait()
+        self.play(Write(d_relate))
+
+        # Calculate d prime
+        distance_prime_eq = MathTex(
+            'd',
+            '=',
+            'v_0t',
+            '+',
+            '\\frac{1}{2}at^2',
+        ).scale(0.8).to_corner(UP+LEFT, buff=1)
+        distance_prime_eq_subbed = MathTex(
+            'd^\\prime',
+            '=',
+            '(v_0-v_B)t',
+            '+',
+            '\\frac{1}{2}\\frac{F}{M}t^2',
+            '\\Rightarrow',
+            'd^\\prime = 6.39\\,\\mathrm{m}'
+        ).scale(0.8)
+        distance_prime_eq_subbed.shift(distance_prime_eq[1].get_center()+1*DOWN-distance_prime_eq_subbed[1].get_center())
+        self.play(Write(distance_prime_eq))
+        self.wait()
+        self.play(Write(distance_prime_eq_subbed[:-2]))
+        self.wait()
+        self.play(Write(distance_prime_eq_subbed[-2:]))
+        hlbox_d_prime = SurroundingRectangle(distance_prime_eq_subbed[-1], buff=0.15)
+        self.play(ShowCreation(hlbox_d_prime))
+        self.wait()
+
+        # Energy equations
+        energy_0B = MathTex(
+            '\\Delta W',
+            '=',
+            '\\Delta E_g',
+            '+',
+            '\\Delta E_k'
+        ).scale(0.8).next_to(distance_prime_eq_subbed, DOWN, aligned_edge=LEFT, buff=0.75)
+        energy_1B = MathTex(
+            'Fd^\\prime',
+            '=',
+            '\\frac{1}{2}Mv_{1B}^2 - \\frac{1}{2}M(v_0-v_B)^2'
+        ).scale(0.8)
+        energy_1B.shift(energy_0B[1].get_center()-energy_1B[1].get_center())
+        self.play(Write(energy_0B))
+        self.wait()
+        self.play(ReplacementTransform(energy_0B[:2], energy_1B[:2]))
+        self.wait()
+        self.play(FadeOut(energy_0B[2:4]))
+        self.play(ReplacementTransform(energy_0B[4], energy_1B[2]))
+        self.wait()
+        v1B = MathTex('v_{1A} = 4.08\\,\\mathrm{m/s}').scale(0.9).next_to(energy_1B, DOWN, aligned_edge=LEFT, buff=0.5)
+        hlbox_v1B = SurroundingRectangle(v1B, buff=0.15)
+        self.play(Write(v1B))
+        self.play(ShowCreation(hlbox_v1B))
+        self.wait()
         #endregion
 
 
