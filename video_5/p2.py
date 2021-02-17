@@ -121,8 +121,14 @@ class T5P2(Scene):
             start=path.get_start()+2*LEFT,
             end=path.get_start()+3*RIGHT,
             color=PURPLE_A,
+            stroke_opacity=0.4
         )
         h_ref_label = MathTex('h=0', color=PURPLE_A).scale(0.8).next_to(h_ref_line, LEFT, buff=0.15)
+        self.play(
+            ShowCreation(h_ref_line),
+            Write(h_ref_label)
+        )
+        self.wait()
         #endregion
 
         #region Energy at B
@@ -145,7 +151,7 @@ class T5P2(Scene):
         ).scale(0.75).to_corner(UP+LEFT, buff=0.75)
         spring_energy = MathTex(
             'E_{spring}=\\frac{1}{2}k\\delta^2'
-        ).scale(0.75).next_to(energy, RIGHT, buff=1)
+        ).scale(0.75).next_to(energy, RIGHT, buff=1).shift(0.05*UP)
         spring_expl = Tex(
             '$\\delta$ is the deflection of the spring from its \\textit{neutral} position', color=YELLOW
         ).scale(0.5).next_to(spring_energy, DOWN, buff=0.15)
@@ -154,7 +160,7 @@ class T5P2(Scene):
         self.play(Write(energy[5:]))
         self.wait()
         self.play(Write(spring_energy))
-        self.play(Write(spring_expl))
+        self.play(Write(spring_expl, run_time=0.6))
         self.wait()
 
         energy_equate_B = MathTex(
@@ -184,6 +190,7 @@ class T5P2(Scene):
             '0 = Mg3r - \\frac{1}{2}Mv_c^2 - \\frac{1}{2}k_a\\delta^2'
         ).scale(0.8).next_to(sol_B, DOWN, aligned_edge=LEFT, buff=0.75)
         self.play(Write(energy_equate_C))
+        self.wait()
         # Finding v_C
         bob_fbd = bob_B.copy().shift(2*LEFT+2*UP)
         g_vect = Arrow(
