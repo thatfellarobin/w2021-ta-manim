@@ -8,7 +8,7 @@ MED_DARK_GREY = '#666666'
 
 class T5P1(Scene):
     def construct(self):
-        attribution = Tex('Robin Liu, 2021. www.robinliu.me', color=MED_DARK_GREY).scale(0.4).to_corner(DOWN+RIGHT, buff=0.2)
+        attribution = Tex('Robin Liu, 2021', color=MED_DARK_GREY).scale(0.4).to_corner(DOWN+RIGHT, buff=0.2)
         self.add(attribution)
 
         #region diagram objects
