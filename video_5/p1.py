@@ -244,7 +244,7 @@ class T5P1(Scene):
         self.play(FadeOut(energy_0B[2:4]))
         self.play(ReplacementTransform(energy_0B[4], energy_1B[2]))
         self.wait()
-        v1B = MathTex('v_{1A} = 4.08\\,\\mathrm{m/s}').scale(0.9).next_to(energy_1B, DOWN, aligned_edge=LEFT, buff=0.5)
+        v1B = MathTex('v_{1B} = 4.08\\,\\mathrm{m/s}').scale(0.9).next_to(energy_1B, DOWN, aligned_edge=LEFT, buff=0.5)
         hlbox_v1B = SurroundingRectangle(v1B, buff=0.15)
         self.play(Write(v1B))
         self.play(ShowCreation(hlbox_v1B))
