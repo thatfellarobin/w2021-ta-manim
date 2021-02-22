@@ -187,7 +187,7 @@ class T5P2(Scene):
         )
         self.wait()
         energy_equate_C = MathTex(
-            '0 = Mg3r - \\frac{1}{2}Mv_c^2 - \\frac{1}{2}k_a\\delta^2'
+            '0 = Mg3r - \\frac{1}{2}Mv_C^2 - \\frac{1}{2}k_b\\delta^2'
         ).scale(0.8).next_to(sol_B, DOWN, aligned_edge=LEFT, buff=0.75)
         self.play(Write(energy_equate_C))
         self.wait()
