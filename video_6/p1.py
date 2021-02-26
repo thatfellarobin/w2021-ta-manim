@@ -111,7 +111,7 @@ class T6P1(Scene):
         yaxis_label = MathTex('T(\\mathrm{N})').scale(0.8).next_to(yaxis, UP, buff=0.15)
         xaxis = Line(
             start=ORIGIN,
-            end=5*RIGHT,
+            end=5.25*RIGHT,
             color=GREY
         )
         xaxis_label = MathTex('t(\\mathrm{s})').scale(0.8).next_to(xaxis, RIGHT, buff=0.15)
@@ -146,6 +146,14 @@ class T6P1(Scene):
             stroke_opacity=0.6
         )
         t1_label = MathTex('t_1', color=GOLD).scale(0.8).next_to(t1_line, DOWN, buff=0.15)
+        t2_line = Line(
+            start=5*RIGHT,
+            end=graphfunc_2.get_end(),
+            color=GOLD,
+            stroke_width=5,
+            stroke_opacity=0.6
+        )
+        t2_label = MathTex('t_2', color=GOLD).scale(0.8).next_to(t2_line, DOWN, buff=0.15)
 
         Graph = Group(
             yaxis,
@@ -158,7 +166,9 @@ class T6P1(Scene):
             T1_line,
             T1_label,
             t1_line,
-            t1_label
+            t1_label,
+            t2_line,
+            t2_label
         ).move_to(UP)
         self.play(
             ShowCreation(yaxis),
@@ -176,6 +186,8 @@ class T6P1(Scene):
             Write(T1_label),
             ShowCreation(t1_line),
             Write(t1_label),
+            ShowCreation(t2_line),
+            Write(t2_label)
         )
         self.wait()
         #endregion
@@ -284,24 +296,80 @@ class T6P1(Scene):
             max_tip_length_to_length_ratio=1
         )
         friction_kinetic_label = MathTex('F_{fk}', color=RED).scale(0.8).next_to(friction_kinetic_arrow.get_end(), UP+LEFT, buff=0.15)
+        hlbox = SurroundingRectangle(Group(friction_static_arrow, friction_static_label))
+        self.play(ShowCreation(hlbox))
+        self.wait()
         self.play(
             ReplacementTransform(friction_static_arrow, friction_kinetic_arrow),
             ReplacementTransform(friction_static_label, friction_kinetic_label),
+            Transform(hlbox, SurroundingRectangle(Group(friction_kinetic_arrow, friction_kinetic_label)))
         )
-        for _ in range(3):
-            self.play(CircleIndicate(friction_kinetic_label))
+        # for _ in range(3):
+        #     self.play(CircleIndicate(friction_kinetic_label))
+        self.wait()
+        self.play(FadeOut(hlbox))
         self.wait()
 
         Diagram = Group(Diagram, friction_kinetic_arrow, friction_kinetic_label)
         Graph = Group(Graph, indicator, t0_line, t0_label)
         #endregion
 
-
-        Diagram_target = Diagram.copy().scale(0.8).to_corner(DOWN+LEFT, buff=0.5)
-        Graph_target = Graph.copy().scale(0.6).next_to(Diagram_target, UP, aligned_edge=LEFT, buff=1)
+        # cleanup to prepare to math it out
+        Diagram_target = Diagram.copy().scale(0.8).to_corner(DOWN+LEFT, buff=0.75)
+        Graph_target = Graph.copy().scale(0.6).next_to(Diagram_target, UP, aligned_edge=LEFT, buff=0.5)
         self.play(
             Transform(Diagram, Diagram_target),
             Transform(Graph, Graph_target)
         )
         self.wait()
+
+        #region math it out
+        friction_static_condition = MathTex(
+            '2T_1\\left(\\frac{t_0}{t_1}\\right)^2=\\mu_sMg',
+            '\\Rightarrow',
+            't_0 = 2.48\\,\\mathrm{s}'
+        ).scale(0.8).to_corner(UP+LEFT)
+        friction_static_condition[2].set_color(YELLOW)
+        self.play(Write(friction_static_condition[0]))
+        self.wait()
+        self.play(Write(friction_static_condition[1:]))
+        self.wait()
+
+        # Impulse and momentum:
+        momentum = MathTex('p=mv').scale(0.8).next_to(friction_static_condition, RIGHT, buff=1).shift(0.1*DOWN)
+        impulse = MathTex('J=\\int F\\,\\mathrm{d}t = \\Delta p').scale(0.8).next_to(momentum, RIGHT, buff=1).shift(0.05*UP)
+        self.play(Write(momentum))
+        self.wait()
+        self.play(Write(impulse))
+        self.wait()
+
+        impulse_eq = MathTex(
+            'J',
+            '=',
+            '\\int^{t_1}_{t_0}2T_1\\left(\\frac{t_0}{t_1}\\right)^2\\,\\mathrm{d}t',
+            '-',
+            '\\mu_kMg(t_1-t_0)',
+            '+',
+            '(2T_1-\\mu_kMg)(t_2-t_1)',
+            '=',
+            'p_2-p_0',
+            '=',
+            'Mv_2'
+        ).scale(0.74).next_to(friction_static_condition, DOWN, buff=0.5, aligned_edge=LEFT)
+        # TODO: Add some better indicators to show which time period each term is relevant to?
+        ans = MathTex('v_2 = 7.65\\,\\mathrm{m/s}').scale(1).shift(3*RIGHT)
+        ansbox = SurroundingRectangle(ans, buff=0.15)
+
+        self.play(Write(impulse_eq[:2]))
+        self.wait()
+        self.play(Write(impulse_eq[2:5]))
+        self.wait()
+        self.play(Write(impulse_eq[5:7]))
+        self.wait()
+        self.play(Write(impulse_eq[7:]))
+        self.wait()
+        self.play(Write(ans))
+        self.play(ShowCreation(ansbox))
+        self.wait()
+        #endregion
 
