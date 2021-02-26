@@ -193,7 +193,7 @@ class T6P1(Scene):
         indicator_x0 = indicator.get_center()[0]
         friction_static_arrow = Arrow(
             start=Log.get_corner(DOWN+LEFT),
-            end=Log.get_corner(DOWN+LEFT) + LEFT,
+            end=Log.get_corner(DOWN+LEFT) + 2*LEFT,
             color=MAROON,
             buff=0.0,
             stroke_width=8,
@@ -260,6 +260,7 @@ class T6P1(Scene):
         # I don't know why but removal and adding it back in fixes an animation issue where it doesn't transform with the rest of the graph
         self.remove(indicator)
         self.add(indicator)
+
         t0_line = Line(
             start=indicator.get_center(),
             end=np.array([indicator.get_center()[0], xaxis.get_center()[1], 0]),
@@ -272,12 +273,31 @@ class T6P1(Scene):
         )
         self.wait()
 
-        Diagram = Group(Diagram, friction_static_arrow, friction_static_label)
+        friction_kinetic_arrow = Arrow(
+            start=friction_static_arrow.get_start(),
+            end=friction_static_arrow.get_start() + friction_static_arrow.get_length()*(0.4/0.5)*LEFT,
+            color=RED,
+            buff=0.0,
+            stroke_width=8,
+            tip_length=0.3,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        friction_kinetic_label = MathTex('F_{fk}', color=RED).scale(0.8).next_to(friction_kinetic_arrow.get_end(), UP+LEFT, buff=0.15)
+        self.play(
+            ReplacementTransform(friction_static_arrow, friction_kinetic_arrow),
+            ReplacementTransform(friction_static_label, friction_kinetic_label),
+        )
+        for _ in range(3):
+            self.play(CircleIndicate(friction_kinetic_label))
+        self.wait()
+
+        Diagram = Group(Diagram, friction_kinetic_arrow, friction_kinetic_label)
         Graph = Group(Graph, indicator, t0_line, t0_label)
         #endregion
 
 
-        Diagram_target = Diagram.copy().scale(0.8).to_corner(DOWN+LEFT, buff=1)
+        Diagram_target = Diagram.copy().scale(0.8).to_corner(DOWN+LEFT, buff=0.5)
         Graph_target = Graph.copy().scale(0.6).next_to(Diagram_target, UP, aligned_edge=LEFT, buff=1)
         self.play(
             Transform(Diagram, Diagram_target),
