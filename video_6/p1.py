@@ -9,6 +9,7 @@ BLUE_E_DARK = '#0c343d'
 
 T1 = 1800
 t1 = 3
+t0 = 2.48
 graph_yscale = 2.5/T1
 graph_xscale = 1
 
@@ -133,14 +134,16 @@ class T6P1(Scene):
             start=2.5*UP,
             end=graphfunc_1.get_end(),
             color=GOLD,
-            stroke_width=5
+            stroke_width=5,
+            stroke_opacity=0.6
         )
         T1_label = MathTex('T1', color=GOLD).scale(0.8).next_to(T1_line, LEFT, buff=0.15)
         t1_line = Line(
             start=3*RIGHT,
             end=graphfunc_1.get_end(),
             color=GOLD,
-            stroke_width=5
+            stroke_width=5,
+            stroke_opacity=0.6
         )
         t1_label = MathTex('t_1', color=GOLD).scale(0.8).next_to(t1_line, DOWN, buff=0.15)
 
@@ -176,6 +179,103 @@ class T6P1(Scene):
         )
         self.wait()
         #endregion
+
+        #region Animate the friction increasing until static friction is overcome
+        subpath = ParametricFunction(
+            function=pathfunction_T_p1,
+            t_min=0,
+            t_max=t0,
+        ).shift(graphfunc_1.get_start())
+        indicator = Dot(
+            point=subpath.get_start(),
+            color=YELLOW
+        )
+        indicator_x0 = indicator.get_center()[0]
+        friction_static_arrow = Arrow(
+            start=Log.get_corner(DOWN+LEFT),
+            end=Log.get_corner(DOWN+LEFT) + LEFT,
+            color=MAROON,
+            buff=0.0,
+            stroke_width=8,
+            tip_length=0.3,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        friction_static_label = MathTex('F_{fs}', color=MAROON).scale(0.8).next_to(friction_static_arrow.get_end(), UP+LEFT, buff=0.15)
+
+        self.play(
+            Write(friction_static_arrow),
+            Write(friction_static_label)
+        )
+        self.wait()
+        def friction_static_arrow_updater(arrow):
+            arrowscale = 1.5/T1
+            indicator_x = indicator.get_center()[0]
+            tvalue = indicator_x - indicator_x0
+            Tvalue = T1 * (tvalue/t1)**2
+            newarrow = Arrow(
+                start=arrow.get_start(),
+                end=arrow.get_start() + 2*Tvalue*arrowscale*LEFT,
+                color=MAROON,
+                buff=0.0,
+                stroke_width=8,
+                tip_length=0.3,
+                max_stroke_width_to_length_ratio=999,
+                max_tip_length_to_length_ratio=1
+            )
+            arrow.become(newarrow)
+        def tension_arrow_updater(arrow):
+            arrowscale = 1.5/T1
+            indicator_x = indicator.get_center()[0]
+            tvalue = indicator_x - indicator_x0
+            Tvalue = T1 * (tvalue/t1)**2
+            newarrow = Arrow(
+                start=arrow.get_start(),
+                end=arrow.get_start() + Tvalue*arrowscale*RIGHT,
+                color=BLUE,
+                buff=0.0,
+                stroke_width=8,
+                tip_length=0.3,
+                max_stroke_width_to_length_ratio=999,
+                max_tip_length_to_length_ratio=1
+            )
+            arrow.become(newarrow)
+        def friction_static_label_updater(label):
+            label.next_to(friction_static_arrow.get_end(), UP+LEFT, buff=0.15)
+        def tension_label_updater(label):
+            label.next_to(tension_arrow, RIGHT, buff=0.15)
+
+        tension_arrow.add_updater(tension_arrow_updater)
+        friction_static_arrow.add_updater(friction_static_arrow_updater)
+        tension_label.add_updater(tension_label_updater)
+        friction_static_label.add_updater(friction_static_label_updater)
+        self.wait()
+        self.play(FadeIn(indicator))
+        self.play(MoveAlongPath(indicator, subpath, run_time=4, rate_func=linear))
+        self.wait()
+        tension_arrow.clear_updaters()
+        friction_static_arrow.clear_updaters()
+        tension_label.clear_updaters()
+        friction_static_label.clear_updaters()
+        # I don't know why but removal and adding it back in fixes an animation issue where it doesn't transform with the rest of the graph
+        self.remove(indicator)
+        self.add(indicator)
+        t0_line = Line(
+            start=indicator.get_center(),
+            end=np.array([indicator.get_center()[0], xaxis.get_center()[1], 0]),
+            color=YELLOW
+        )
+        t0_label = MathTex('t_0', color=YELLOW).scale(0.8).next_to(t0_line.get_end(), DOWN, buff=0.15)
+        self.play(
+            ShowCreation(t0_line),
+            Write(t0_label)
+        )
+        self.wait()
+
+        Diagram = Group(Diagram, friction_static_arrow, friction_static_label)
+        Graph = Group(Graph, indicator, t0_line, t0_label)
+        #endregion
+
 
         Diagram_target = Diagram.copy().scale(0.8).to_corner(DOWN+LEFT, buff=1)
         Graph_target = Graph.copy().scale(0.6).next_to(Diagram_target, UP, aligned_edge=LEFT, buff=1)
