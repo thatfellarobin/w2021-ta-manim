@@ -129,7 +129,7 @@ class T6P1(Scene):
             fill_opacity=0,
             color=BLUE
         )
-        graphfunc_label = MathTex('T=T_1\\left(\\frac{t}{t_1}\\right)^2', color=BLUE).scale(0.8).next_to(graphfunc_2.get_end(), RIGHT, buff=0.15)
+        graphfunc_label = MathTex('T=T_1\\left(\\frac{t}{t_1}\\right)^2', color=BLUE).scale(0.65).next_to(graphfunc_1.get_end(), LEFT, buff=0.7).shift(0.6*DOWN)
         T1_line = Line(
             start=2.5*UP,
             end=graphfunc_1.get_end(),
@@ -137,7 +137,7 @@ class T6P1(Scene):
             stroke_width=5,
             stroke_opacity=0.6
         )
-        T1_label = MathTex('T1', color=GOLD).scale(0.8).next_to(T1_line, LEFT, buff=0.15)
+        T1_label = MathTex('T_1', color=GOLD).scale(0.8).next_to(T1_line, LEFT, buff=0.15)
         t1_line = Line(
             start=3*RIGHT,
             end=graphfunc_1.get_end(),
@@ -355,16 +355,38 @@ class T6P1(Scene):
             'p_2-p_0',
             '=',
             'Mv_2'
-        ).scale(0.74).next_to(friction_static_condition, DOWN, buff=0.5, aligned_edge=LEFT)
-        # TODO: Add some better indicators to show which time period each term is relevant to?
-        ans = MathTex('v_2 = 7.65\\,\\mathrm{m/s}').scale(1).shift(3*RIGHT)
+        ).scale(0.73).next_to(friction_static_condition, DOWN, buff=0.4, aligned_edge=LEFT)
+
+        ans = MathTex('v_2 = 7.65\\,\\mathrm{m/s}').scale(1).shift(3.25*RIGHT+1*DOWN)
         ansbox = SurroundingRectangle(ans, buff=0.15)
+
+        time_period_1_line = Line(
+            start=impulse_eq[2:5].get_edge_center(LEFT+DOWN),
+            end=impulse_eq[2:5].get_edge_center(RIGHT+DOWN),
+            color=GOLD
+        ).shift(0.1*DOWN)
+        time_period_1_label = MathTex('t_0 < t < t_1', color=GOLD).scale(0.6).next_to(time_period_1_line, DOWN, buff=0.15)
+        time_period_2_line = Line(
+            start=impulse_eq[6].get_edge_center(LEFT+DOWN),
+            end=impulse_eq[6].get_edge_center(RIGHT+DOWN),
+            color=GOLD
+        )
+        time_period_2_line.shift((time_period_1_line.get_center() - time_period_2_line.get_center())[1] * UP) # Line it up with the first line
+        time_period_2_label = MathTex('t_1 < t < t_2', color=GOLD).scale(0.6).next_to(time_period_2_line, DOWN, buff=0.15)
 
         self.play(Write(impulse_eq[:2]))
         self.wait()
         self.play(Write(impulse_eq[2:5]))
+        self.play(
+            ShowCreation(time_period_1_line),
+            Write(time_period_1_label)
+        )
         self.wait()
         self.play(Write(impulse_eq[5:7]))
+        self.play(
+            ShowCreation(time_period_2_line),
+            Write(time_period_2_label)
+        )
         self.wait()
         self.play(Write(impulse_eq[7:]))
         self.wait()
