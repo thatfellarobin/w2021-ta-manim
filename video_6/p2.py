@@ -181,7 +181,7 @@ class T5P2(Scene):
             transition_arrow,
             diagram_down
         )
-        self.play(Transform(diagram_all, diagram_all.copy().scale(0.8).to_corner(DOWN+LEFT)))
+        self.play(Transform(diagram_all, diagram_all.copy().scale(0.9).to_corner(DOWN+LEFT)))
         self.wait()
 
         #region Conservation of momentum
@@ -202,11 +202,48 @@ class T5P2(Scene):
         self.play(Write(impulse_eq[3:]))
         self.wait()
         self.play(FadeOut(impulse_eq[3:]))
-        self.wait()
         hlbox_1 = SurroundingRectangle(impulse_eq[:3])
         self.play(ShowCreation(hlbox_1))
+        self.wait()
         #endregion
 
         #region Conservation of energy
+        energy_0 = MathTex(
+            '\\Delta W',
+            '=',
+            '\\Delta E_{grav}',
+            '+',
+            '\\Delta E_{kin}'
+        ).scale(0.8).next_to(impulse, RIGHT, buff=2)
+        energy_1 = MathTex(
+            '0',
+            '=',
+            '2\\left(-mg(2l)\\right)',
+            '+',
+            '\\frac{1}{2}2mv_x^2 + 2\\frac{1}{2}m\\left(v_x-l\\dot{\\theta}^2\\right)^2'
+        ).scale(0.8).next_to(energy_0, DOWN, aligned_edge=LEFT)
 
+        self.play(Write(energy_0))
+        self.wait()
+        self.play(Write(energy_1[:2]))
+        self.wait()
+        self.play(Write(energy_1[2]))
+        self.wait()
+        self.play(Write(energy_1[3:]))
+        self.wait()
+        hlbox_2 = SurroundingRectangle(energy_1)
+        self.play(ShowCreation(hlbox_2))
+        self.wait()
         #endregion
+
+        # Final answers
+        ans_vx = MathTex('v_x = \\sqrt{2gl}').scale(0.9).shift(4.25*RIGHT)
+        ans_theta_dot = MathTex('\\dot{\\theta} = 2\\sqrt{\\frac{2g}{l}}').scale(0.9).next_to(ans_vx, DOWN, buff=0.75, aligned_edge=LEFT)
+        ansbox = SurroundingRectangle(Group(ans_vx, ans_theta_dot), buff=0.2)
+        self.play(Write(ans_vx), Write(ans_theta_dot))
+        self.play(
+            ShowCreation(ansbox),
+            FadeOut(hlbox_1),
+            FadeOut(hlbox_2)
+        )
+        self.wait()
