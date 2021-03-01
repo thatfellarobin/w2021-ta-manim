@@ -28,6 +28,7 @@ class T6P3(Scene):
         attribution = Tex('Robin Liu, 2021', color=MED_DARK_GREY).scale(0.4).to_corner(DOWN+RIGHT, buff=0.2)
         self.add(attribution)
 
+        #region Coordinates
         x_axis = Line(
             start=pv(np.array([-1.5, 0, 0])),
             end=pv(np.array([2.75, 0, 0])),
@@ -58,7 +59,55 @@ class T6P3(Scene):
             z_axis,
             z_label
         )
+        #endregion
 
+        #region Unit vectors
+        i_axis = Arrow(
+            start=ORIGIN,
+            end=pv(np.array([1, 0, 0])),
+            color=BLUE,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.2,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        i_label = MathTex('\\hat{i}', color=BLUE).scale(0.8).next_to(i_axis.get_end(), i_axis.get_unit_vector(), buff=0.15)
+        j_axis = Arrow(
+            start=ORIGIN,
+            end=pv(np.array([0, 1, 0])),
+            color=BLUE,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.2,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        j_label = MathTex('\\hat{j}', color=BLUE).scale(0.8).next_to(j_axis.get_end(), j_axis.get_unit_vector(), buff=0.15)
+        k_axis = Arrow(
+            start=ORIGIN,
+            end=pv(np.array([0, 0, 1])),
+            color=BLUE,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.2,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        k_label = MathTex('\\hat{k}', color=BLUE).scale(0.8).next_to(k_axis.get_end(), k_axis.get_unit_vector(), buff=0.15)
+        origin_dot_unit = origin_dot.copy()
+        unitvect_group = Group(
+            i_axis,
+            i_label,
+            j_axis,
+            j_label,
+            k_axis,
+            k_label,
+            origin_dot_unit
+        ).move_to(3.75*LEFT+1.5*UP)
+        #endregion
+
+        #region Dimensions
         dim_5 = Line(
             start=pv(np.array([2, 0, 0])),
             end=pv(np.array([2, 5, 0])),
@@ -109,9 +158,9 @@ class T6P3(Scene):
             dim_1_5,
             dim_1_5_label
         )
+        #endregion
 
-
-
+        #region Particle masses
         ball_1 = Dot(
             point=pv(np.array([2, 0, 0])),
             color=MAROON,
@@ -138,7 +187,9 @@ class T6P3(Scene):
             ball_3,
             ball_3_label
         )
+        #endregion
 
+        #region Vectors and vector annotations
         v1 = Arrow(
             start=ball_1.get_center(),
             end=pv(np.array([2-2.25*np.cos(PI/3)*np.sin(PI/6), 2.25*np.cos(PI/3)*np.cos(PI/6), 2.25*np.sin(PI/3)])),
@@ -149,7 +200,7 @@ class T6P3(Scene):
             max_stroke_width_to_length_ratio=999,
             max_tip_length_to_length_ratio=1
         )
-        v1_label = MathTex('4v', color=GREEN).scale(0.5).next_to(v1.get_end(), RIGHT, buff=0.1)
+        v1_label = MathTex('4v', color=GREEN).scale(0.5).next_to(v1.get_end(), v1.get_unit_vector(), buff=0.1)
         v1_xy_refline = Line(
             start=ball_1.get_center(),
             end=pv(np.array([2-3*np.cos(PI/3)*np.sin(PI/6), 3*np.cos(PI/3)*np.cos(PI/6), 0])),
@@ -220,7 +271,6 @@ class T6P3(Scene):
             max_tip_length_to_length_ratio=1
         )
         f3_label = MathTex('2F', color=RED).scale(0.5).next_to(f3.get_end(), f3.get_unit_vector(), buff=0.1)
-
         v_group = Group(
             v1_xy_refline,
             v1_z_refline,
@@ -239,11 +289,14 @@ class T6P3(Scene):
             f3,
             f3_label
         )
+        #endregion
 
         total_diagram = Group(axes_group, dim_group, v_group, ball_group)
         global_shift = -total_diagram.get_center()
         total_diagram.shift(global_shift)
         self.add(total_diagram)
+        self.wait()
+        self.play(FadeIn(unitvect_group))
         self.wait()
 
 
