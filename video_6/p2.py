@@ -6,7 +6,7 @@ GOLD_DARK = '#5c4326'
 BLUE_E_DARK = '#0c343d'
 GREEN_DARK = '#2b4022'
 
-class T5P2(Scene):
+class T6P2(Scene):
     def construct(self):
         attribution = Tex('Robin Liu, 2021', color=MED_DARK_GREY).scale(0.4).to_corner(DOWN+RIGHT, buff=0.2)
         self.add(attribution)
