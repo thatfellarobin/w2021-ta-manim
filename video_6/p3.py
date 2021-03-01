@@ -298,9 +298,182 @@ class T6P3(Scene):
         self.wait()
         self.play(FadeIn(unitvect_group))
         self.wait()
+        self.play(
+            Transform(total_diagram, total_diagram.copy().to_corner(DOWN+LEFT)),
+            Transform(unitvect_group, unitvect_group.copy().to_corner(UP+LEFT))
+        )
+        global_shift = global_shift + total_diagram.get_center()
+        self.wait()
 
+        #region math
+        r_bar = MathTex(
+            '\\bar{r}',
+            '=',
+            '\\frac{\\Sigma m_ir_i}{\\Sigma m_i}',
+            '=',
+            '\\frac{m(2b\\hat{i}) + 3m(-b\\hat{i} + 2.5b\\hat{j} + 1.5b\\hat{k}) + 5m(2b\\hat{i} + 5b\\hat{j} + 3b\\hat{k})}{m+3m+5m}'
+        ).scale(0.6).to_corner(UP+RIGHT)
+        r_bar_ans = MathTex(
+            '\\bar{r} = b\\hat{i}+3.61b\\hat{j}+2.17b\\hat{k}'
+        ).scale(0.6).next_to(r_bar, DOWN, aligned_edge=LEFT)
+        r_bar_ansbox = SurroundingRectangle(r_bar_ans, buff=0.15)
+        r_bar_ansgroup = Group(r_bar_ans, r_bar_ansbox)
+        self.play(Write(r_bar[:3]))
+        self.wait()
+        self.play(Write(r_bar[3:]))
+        self.wait()
+        self.play(Write(r_bar_ans))
+        self.play(ShowCreation(r_bar_ansbox))
+        self.wait()
+        self.play(
+            FadeOut(r_bar),
+            Transform(r_bar_ansgroup, r_bar_ansgroup.copy().next_to(total_diagram, RIGHT, aligned_edge=UP))
+        )
+        self.wait()
 
+        r_bar_dot = MathTex(
+            '\\dot{\\bar{r}}',
+            '=',
+            '\\frac{\\Sigma m_i\\dot{r_i}}{\\Sigma m_i}',
+            '=',
+            '\\frac{m(4v(-\\cos 60^\\circ\\sin 30^\\circ\\hat{i} + \\cos 60^\\circ\\cos 30^\\circ\\hat{j} + \\sin 60^\\circ\\hat{k})) + 3m(2v\\hat{i}) + 5m(v\\hat{j}) }{ m+3m+5m }'
+        ).scale(0.6).to_corner(UP+RIGHT)
+        r_bar_dot_ans = MathTex(
+            '\\dot{\\bar{r}} = 0.556v\\hat{i} + 0.748v\\hat{j} + 0.385v\\hat{k}'
+        ).scale(0.6).next_to(r_bar_dot, DOWN, aligned_edge=LEFT)
+        r_bar_dot_ansbox = SurroundingRectangle(r_bar_dot_ans, buff=0.15)
+        r_bar_dot_ansgroup = Group(r_bar_dot_ans, r_bar_dot_ansbox)
+        self.play(Write(r_bar_dot[:3]))
+        self.wait()
+        self.play(Write(r_bar_dot[3:]))
+        self.wait()
+        self.play(Write(r_bar_dot_ans))
+        self.play(ShowCreation(r_bar_dot_ansbox))
+        self.wait()
+        self.play(
+            FadeOut(r_bar_dot),
+            Transform(r_bar_dot_ansgroup, r_bar_dot_ansgroup.copy().next_to(r_bar_ansgroup, DOWN, buff=0.1, aligned_edge=LEFT))
+        )
+        self.wait()
 
+        r_bar_ddot = MathTex(
+            '\\ddot{\\bar{r}}',
+            '=',
+            '\\frac{\\Sigma \\vec{F}}{\\Sigma m_i}',
+            '=',
+            '\\frac{ -3F\\hat{j} + 2F\\hat{k} }{ m+3m+5m }'
+        ).scale(0.6).to_corner(UP+RIGHT)
+        r_bar_ddot_ans = MathTex(
+            '\\ddot{\\bar{r}} = -0.333\\frac{F}{m}\\hat{j} + 0.222\\frac{F}{m}\\hat{k}'
+        ).scale(0.6).next_to(r_bar_ddot, DOWN, aligned_edge=LEFT)
+        r_bar_ddot_ansbox = SurroundingRectangle(r_bar_ddot_ans, buff=0.15)
+        r_bar_ddot_ansgroup = Group(r_bar_ddot_ans, r_bar_ddot_ansbox)
+        self.play(Write(r_bar_ddot[:3]))
+        self.wait()
+        self.play(Write(r_bar_ddot[3:]))
+        self.wait()
+        self.play(Write(r_bar_ddot_ans))
+        self.play(ShowCreation(r_bar_ddot_ansbox))
+        self.wait()
+        self.play(
+            FadeOut(r_bar_ddot),
+            Transform(r_bar_ddot_ansgroup, r_bar_ddot_ansgroup.copy().next_to(r_bar_dot_ansgroup, DOWN, buff=0.1, aligned_edge=LEFT))
+        )
+        self.wait()
+
+        T = MathTex(
+            'T',
+            '=',
+            '\\Sigma\\frac{1}{2}m_iv_i^2',
+            '=',
+            '\\frac{1}{2}(m(4v)^2 + 3m(2v)^2 + 5mv^2)'
+        ).scale(0.6).to_corner(UP+RIGHT)
+        T_ans = MathTex(
+            'T = 16.5mv^2'
+        ).scale(0.6).next_to(T, DOWN, aligned_edge=LEFT)
+        T_ansbox = SurroundingRectangle(T_ans, buff=0.15)
+        T_ansgroup = Group(T_ans, T_ansbox)
+        self.play(Write(T[:3]))
+        self.wait()
+        self.play(Write(T[3:]))
+        self.wait()
+        self.play(Write(T_ans))
+        self.play(ShowCreation(T_ansbox))
+        self.wait()
+        self.play(
+            FadeOut(T),
+            Transform(T_ansgroup, T_ansgroup.copy().next_to(r_bar_ddot_ansgroup, DOWN, buff=0.1, aligned_edge=LEFT))
+        )
+        self.wait()
+
+        H_o = MathTex(
+            'H_O',
+            '=',
+            '\\Sigma (r_i\\times m_iv_i)',
+            '=',
+            '2b\\hat{i}\\times m(4v(-\\cos 60^\\circ\\sin 30^\\circ\\hat{i} + \\cos 60^\\circ\\cos 30^\\circ\\hat{j} + \\sin 60^\\circ\\hat{k}))',
+            '+',
+            '(-b\\hat{i} + 2.5b\\hat{j} + 1.5b\\hat{k})\\times 3m(2v\\hat{i})',
+            '+',
+            '(2b\\hat{i} + 5b\\hat{j} + 3b\\hat{k})\\times m(v\\hat{j})'
+        ).scale(0.6).to_corner(UP+RIGHT)
+        H_o[3:].next_to(H_o[1], DOWN, buff=0.2, aligned_edge=LEFT)
+        H_o[5:].next_to(H_o[4], DOWN, buff=0.2, aligned_edge=LEFT)
+        H_o[7:].next_to(H_o[5], DOWN, buff=0.2, aligned_edge=LEFT)
+        H_o.to_corner(UP+RIGHT)
+        H_o_ans = MathTex(
+            'H_O = -15mvb\\hat{i} + 2.07mvb\\hat{j} - 1.536mvb\\hat{k}'
+        ).scale(0.6).next_to(H_o, DOWN, aligned_edge=LEFT)
+        H_o_ansbox = SurroundingRectangle(H_o_ans, buff=0.15)
+        H_o_ansgroup = Group(H_o_ans, H_o_ansbox)
+        self.play(Write(H_o[:3]))
+        self.wait()
+        self.play(Write(H_o[3:5]))
+        self.wait()
+        self.play(Write(H_o[5:7]))
+        self.wait()
+        self.play(Write(H_o[7:]))
+        self.wait()
+        self.play(Write(H_o_ans))
+        self.play(ShowCreation(H_o_ansbox))
+        self.wait()
+        self.play(
+            FadeOut(H_o),
+            Transform(H_o_ansgroup, H_o_ansgroup.copy().next_to(T_ansgroup, DOWN, buff=0.1, aligned_edge=LEFT))
+        )
+        self.wait()
+
+        H_dot_o = MathTex(
+            '\\dot{H}_O',
+            '=',
+            '\\Sigma M_O = \\Sigma (r\\times \\vec{F})',
+            '=',
+            '(-b\\hat{i} + 2.5b\\hat{j} + 1.5b\\hat{k})\\times -3F\\hat{j}',
+            '+',
+            '(2b\\hat{i} + 5b\\hat{j} + 3b\\hat{k})\\times 2F\\hat{k}'
+        ).scale(0.6).to_corner(UP+RIGHT)
+        H_dot_o[3:].next_to(H_dot_o[1], DOWN, buff=0.2, aligned_edge=LEFT)
+        H_dot_o[5:].next_to(H_dot_o[4], DOWN, buff=0.2, aligned_edge=LEFT)
+        H_dot_o.to_corner(UP+RIGHT)
+        H_dot_o_ans = MathTex(
+            '\\dot{H}_O = 14.5Fb\\hat{i} - 4Fb\\hat{j} + 3Fb\\hat{k}'
+        ).scale(0.6).next_to(H_dot_o, DOWN, aligned_edge=LEFT)
+        H_dot_o_ansbox = SurroundingRectangle(H_dot_o_ans, buff=0.15)
+        H_dot_o_ansgroup = Group(H_dot_o_ans, H_dot_o_ansbox)
+        self.play(Write(H_dot_o[:3]))
+        self.wait()
+        self.play(Write(H_dot_o[3:5]))
+        self.wait()
+        self.play(Write(H_dot_o[5:]))
+        self.wait()
+        self.play(Write(H_dot_o_ans))
+        self.play(ShowCreation(H_dot_o_ansbox))
+        self.wait()
+        self.play(
+            FadeOut(H_dot_o),
+            Transform(H_dot_o_ansgroup, H_dot_o_ansgroup.copy().next_to(H_o_ansgroup, DOWN, buff=0.1, aligned_edge=LEFT))
+        )
+        self.wait()
 
 
 if __name__ == '__main__':
