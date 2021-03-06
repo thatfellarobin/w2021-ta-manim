@@ -8,7 +8,7 @@ BROWN = '#8f4a04'
 MED_DARK_GREY = '#666666'
 BLUE_E_DARK = '#0c343d'
 
-class T6P1(Scene):
+class T7P1(Scene):
     def construct(self):
         attribution = Tex('Robin Liu, 2021', color=MED_DARK_GREY).scale(0.4).to_corner(DOWN+RIGHT, buff=0.2)
         self.add(attribution)
@@ -160,6 +160,23 @@ class T6P1(Scene):
             stroke_opacity=0.5
         )
         theta_annot = MathTex('\\theta', color=YELLOW).scale(0.6).next_to(theta_arc, RIGHT, buff=0.15).shift(0.05*(LEFT+UP))
+
+        x_ref_line = Line(
+            start=pin.get_center()+0.5*DOWN,
+            end=pin.get_center()+1*DOWN,
+            color=BLUE
+        )
+        x_arrow = Arrow(
+            start=x_ref_line.get_center(),
+            end=np.array([follower.get_edge_center(LEFT)[0], x_ref_line.get_center()[1], 0]),
+            color=BLUE,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.2,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        x_annot = MathTex('x_A', color=GREEN).scale(0.6).next_to(x_arrow, DOWN, buff=0.15)
         #endregion
 
         self.play(
@@ -174,7 +191,10 @@ class T6P1(Scene):
             Write(r_arrow),
             Write(r_annot),
             Write(theta_arc),
-            Write(theta_annot)
+            Write(theta_annot),
+            ShowCreation(x_ref_line),
+            Write(x_arrow),
+            Write(x_annot)
         )
         self.wait()
 
@@ -189,9 +209,39 @@ class T6P1(Scene):
             r_arrow,
             r_annot,
             theta_arc,
-            theta_annot
+            theta_annot,
+            x_ref_line,
+            x_arrow,
+            x_annot
         )
         self.play(
-            Transform(diagram_withannot, diagram_withannot.copy().to_corner(DOWN+LEFT))
+            Transform(diagram_withannot, diagram_withannot.copy().to_corner(DOWN+LEFT, buff=1))
         )
         self.wait()
+
+        #region Math it out
+        omega_expl = Tex('clockwise rotation at a rate of $\\omega$:', color=YELLOW).scale(0.6).to_corner(UP+LEFT, buff=1).shift(4*RIGHT)
+        theta_dot = MathTex('\\dot{\\theta} = -\\omega').scale(0.8).next_to(omega_expl, DOWN, aligned_edge=LEFT)
+
+        self.play(Write(omega_expl))
+        self.play(Write(theta_dot))
+        self.wait()
+        position = MathTex('x_A = e\\cos\\theta + r').scale(0.8).next_to(theta_dot, DOWN, aligned_edge=LEFT)
+        velocity = MathTex('v_A = \\dot{x}_A = -e\\dot{\\theta}\\sin\\theta', '= e\\omega\\sin\\theta').scale(0.8).next_to(position, DOWN, aligned_edge=LEFT)
+        acceleration = MathTex('a_A = \\ddot{x}_A = -e\\ddot{\\theta}\\sin\\theta - e\\dot{\\theta}^2\\cos\\theta', '= - e\\omega^2\\cos\\theta').scale(0.8).next_to(velocity, DOWN, aligned_edge=LEFT)
+
+        self.play(Write(position))
+        self.wait()
+        self.play(Write(velocity[0]))
+        self.wait()
+        self.play(Write(velocity[1]))
+        hlbox1 = SurroundingRectangle(velocity[1], buff=0.1)
+        self.play(ShowCreation(hlbox1))
+        self.wait()
+        self.play(Write(acceleration[0]))
+        self.wait()
+        self.play(Write(acceleration[1]))
+        hlbox2 = SurroundingRectangle(acceleration[1], buff=0.1)
+        self.play(ShowCreation(hlbox2))
+        self.wait()
+        #endregion
