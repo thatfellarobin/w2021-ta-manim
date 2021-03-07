@@ -94,6 +94,14 @@ class T7P1(Scene):
 
         self.add(diagram)
         self.wait()
+
+        omega_expl = Tex('clockwise rotation at a rate of $\\omega$:', color=YELLOW).scale(0.6).to_corner(UP+LEFT, buff=1).shift(4*RIGHT)
+        theta_dot = MathTex('\\dot{\\theta} = -\\omega').scale(0.8).next_to(omega_expl, DOWN, aligned_edge=LEFT)
+
+        self.play(Write(omega_expl, run_time=1))
+        self.play(Write(theta_dot))
+        self.wait()
+
         follower.add_updater(follower_updater)
         path_arc = Arc(
             start_angle=PI/6,
@@ -101,8 +109,8 @@ class T7P1(Scene):
             radius=1.1,
             arc_center=pin.get_center()
         )
-        for _ in range(4):
-            self.play(MoveAlongPath(cam_disk, path_arc, rate_func=linear, run_time=4))
+        for _ in range(2):
+            self.play(MoveAlongPath(cam_disk, path_arc, rate_func=linear, run_time=3))
         follower.clear_updaters()
         self.wait()
 
@@ -220,12 +228,7 @@ class T7P1(Scene):
         self.wait()
 
         #region Math it out
-        omega_expl = Tex('clockwise rotation at a rate of $\\omega$:', color=YELLOW).scale(0.6).to_corner(UP+LEFT, buff=1).shift(4*RIGHT)
-        theta_dot = MathTex('\\dot{\\theta} = -\\omega').scale(0.8).next_to(omega_expl, DOWN, aligned_edge=LEFT)
 
-        self.play(Write(omega_expl))
-        self.play(Write(theta_dot))
-        self.wait()
         position = MathTex('x_A = e\\cos\\theta + r').scale(0.8).next_to(theta_dot, DOWN, aligned_edge=LEFT)
         velocity = MathTex('v_A = \\dot{x}_A = -e\\dot{\\theta}\\sin\\theta', '= e\\omega\\sin\\theta').scale(0.8).next_to(position, DOWN, aligned_edge=LEFT)
         acceleration = MathTex('a_A = \\ddot{x}_A = -e\\ddot{\\theta}\\sin\\theta - e\\dot{\\theta}^2\\cos\\theta', '= - e\\omega^2\\cos\\theta').scale(0.8).next_to(velocity, DOWN, aligned_edge=LEFT)

@@ -121,7 +121,17 @@ class T7P3(Scene):
             max_tip_length_to_length_ratio=1
         )
         j_label = MathTex('\\hat{j}', color=YELLOW).scale(0.7).next_to(j_arrow, UP, buff=0.15)
-        coordsys = Group(i_arrow, j_arrow, i_label, j_label).scale(0.75).to_corner(DOWN+RIGHT, buff=0.75)
+        k_dot = Dot(
+            point=i_arrow.get_start(),
+            color=YELLOW
+        )
+        k_circle = Circle(
+            arc_center=k_dot.get_center(),
+            radius=0.2,
+            color=YELLOW
+        )
+        k_label = MathTex('\\hat{k}', color=YELLOW).scale(0.7).next_to(k_circle, LEFT, buff=0.15)
+        coordsys = Group(i_arrow, j_arrow, i_label, j_label, k_dot, k_circle, k_label).scale(0.75).to_corner(DOWN+RIGHT, buff=0.75)
         self.play(
             Write(length_ad),
             Write(length_db),
@@ -130,6 +140,9 @@ class T7P3(Scene):
             Write(j_arrow),
             Write(i_label),
             Write(j_label),
+            Write(k_dot),
+            Write(k_circle),
+            Write(k_label),
         )
         self.wait()
 
@@ -172,7 +185,10 @@ class T7P3(Scene):
             color=PURPLE
         ).add_tip(tip_length=0.15)
         omega_cde_annot = MathTex('\\omega_{CDE}', color=PURPLE).scale(0.6).next_to(omega_cde_arrow, DOWN, buff=0.15)
+        assume_text = Tex('Purple:', 'assumed value').scale(0.6).next_to(link_adb, LEFT, buff=1, aligned_edge=UP)
+        assume_text[0].set_color(PURPLE)
         self.play(
+            Write(assume_text),
             Write(v_b_arrow),
             Write(v_b_label),
             Write(v_c_arrow),
