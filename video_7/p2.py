@@ -9,7 +9,6 @@ BROWN = '#8f4a04'
 MED_DARK_GREY = '#666666'
 BLUE_E_DARK = '#0c343d'
 
-LINK_WIDTH = 0.25
 DSCALE = 0.75/50
 
 class T7P2(Scene):
