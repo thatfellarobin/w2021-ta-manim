@@ -280,5 +280,71 @@ class T7P3(Scene):
             Transform(eq_ad_sub[-1], eq_ad_sub[-1].copy().next_to(ansgroup1, DOWN, aligned_edge=LEFT))
         )
         self.wait()
+        #endregion
 
+        title_link_cde = Tex('Link CDE:', color=YELLOW).scale(0.5).next_to(eq_ad_sub[-1], DOWN, aligned_edge=LEFT)
+        #region Link dc
+        eq_dc = MathTex(
+            '\\vec{v}_C = \\vec{v}_D + \\vec{v}_{C/D}'
+        ).scale(0.55).next_to(title_link_cde, DOWN, aligned_edge=LEFT)
+        eq_dc_sub = MathTex(
+            '-|\\vec{v}_C|\\hat{i}',
+            '=',
+            '(1.636\\hat{i} - 1.818\\hat{j}) + \\vec{\\omega}_{CDE}\\times\\vec{r}_{C/D}',
+            '=',
+            '(1.636\\hat{i} - 1.818\\hat{j}) + -|\\vec{\\omega}_{CDE}|\\hat{k} \\times (-0.4\\cos(30^\\circ)\\hat{i} - 0.4\\sin(30^\\circ)\\hat{j})',
+            '=',
+            '(1.636 - 0.2|\\vec{\\omega}_{CDE}|)\\hat{i} + (0.3464|\\vec{\\omega}_{CDE}| - 1.818)\\hat{j}',
+        ).scale(0.55).next_to(eq_dc, DOWN, buff=0.2, aligned_edge=LEFT)
+        eq_dc_sub[3:].next_to(eq_dc_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        eq_dc_sub[5:].next_to(eq_dc_sub[3:5], DOWN, aligned_edge=LEFT, buff=0.15)
+        eq_dc_dir_i = MathTex(
+            '\\hat{i}:',
+            '-|\\vec{v}_C|',
+            '=',
+            '1.636 - 0.2|\\vec{\\omega}_{CDE}|'
+        ).scale(0.55).next_to(eq_dc_sub, DOWN, aligned_edge=LEFT, buff=0.2).shift(0.5*RIGHT)
+        eq_dc_dir_i[0].set_color(YELLOW)
+        eq_dc_dir_j = MathTex(
+            '\\hat{j}:',
+            '0',
+            '=',
+            '0.3464|\\vec{\\omega}_{CDE}| - 1.818',
+        ).scale(0.55).next_to(eq_dc_dir_i, DOWN, aligned_edge=LEFT, buff=0.2)
+        eq_dc_dir_j[0].set_color(YELLOW)
+
+        v_c_ans = MathTex('|\\vec{v}_C| = -0.587\\,\\mathrm{m/s}').scale(0.55).next_to(eq_dc_dir_j, DOWN, aligned_edge=LEFT)
+        omega_cde_ans = MathTex('|\\vec{\\omega}_{CDE}|=5.249\\,\\mathrm{rad/s}').scale(0.55).next_to(v_c_ans, DOWN, aligned_edge=LEFT)
+        ansbox = SurroundingRectangle(v_c_ans)
+        ansgroup2 = Group(v_c_ans, ansbox, omega_cde_ans)
+
+        self.play(Write(title_link_cde))
+        self.play(Write(eq_dc))
+        self.wait()
+        self.play(Write(eq_dc_sub[:3]))
+        self.wait()
+        self.play(Write(eq_dc_sub[3:5]))
+        self.wait()
+        self.play(Write(eq_dc_sub[5:]))
+        self.wait()
+        self.play(
+            Write(eq_dc_dir_i),
+            Write(eq_dc_dir_j)
+        )
+        self.wait()
+        self.play(
+            Write(v_c_ans),
+            Write(omega_cde_ans)
+        )
+        self.play(ShowCreation(ansbox))
+        self.wait()
+        self.play(
+            FadeOut(eq_dc),
+            FadeOut(eq_dc_sub),
+            FadeOut(eq_dc_dir_i),
+            FadeOut(eq_dc_dir_j),
+            Transform(ansgroup2, ansgroup2.copy().next_to(title_link_cde, DOWN, aligned_edge=LEFT, buff=0.15))
+        )
+        self.wait()
+        #endregion
         #endregion
