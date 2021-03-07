@@ -132,7 +132,6 @@ class T7P2(Scene):
             Write(length_ad),
         )
         self.wait()
-        # TODO: Add assumed velocities
 
 
         # Create coordinate system
@@ -174,7 +173,7 @@ class T7P2(Scene):
         title_link_eb = Tex('Link EB:', color=YELLOW).scale(0.5).to_corner(UP+LEFT)
         eq_eb = MathTex(
             '\\vec{v}_B = \\vec{v}_E + \\vec{v}_{B/E}',
-            '= 0 + \\vec{\\omega}_{EB}\\times\\vec{r}_{EB}',
+            '= 0 + \\vec{\\omega}_{EB}\\times\\vec{r}_{B/E}',
             '= 30\\hat{k} \\times 0.05\\hat{j}',
             '\\Rightarrow',
             '\\vec{v}_B = -1.5\\hat{i}\\,\\mathrm{m/s}'
@@ -234,7 +233,7 @@ class T7P2(Scene):
         eq_bc_sub = MathTex(
             '|\\vec{v}_C|\\cos(45^\\circ)\\hat{i} + |\\vec{v}_C|\\sin(45^\\circ)\\hat{j}',
             '=',
-            '-1.5\\hat{i} + \\vec{\\omega}_{ABC}\\times\\vec{r}_{BC}',
+            '-1.5\\hat{i} + \\vec{\\omega}_{ABC}\\times\\vec{r}_{C/B}',
             '=',
             '-1.5\\hat{i} + |\\vec{\\omega}_{ABC}|\\hat{k} \\times (0.25\\cos(60^\\circ)\\hat{i} + 0.25\\sin(60^\\circ)\\hat{j})',
             '=',
@@ -297,7 +296,7 @@ class T7P2(Scene):
         eq_ba_sub = MathTex(
             '\\vec{v}_A',
             '=',
-            '-1.5\\hat{i} + \\vec{\\omega}_{ABC}\\times\\vec{r}_{BA}',
+            '-1.5\\hat{i} + \\vec{\\omega}_{ABC}\\times\\vec{r}_{A/B}',
             '=',
             '-1.5\\hat{i} + (-4.39\\hat{k}) \\times (-0.05\\cos(45^\\circ)\\hat{i} + 0.05\\sin(45^\\circ)\\hat{j})',
             '\\Rightarrow',
@@ -359,7 +358,7 @@ class T7P2(Scene):
         eq_ad_sub = MathTex(
             '-|\\vec{v}_D|\\cos(45^\\circ)\\hat{i} + |\\vec{v}_D|\\sin(45^\\circ)\\hat{j}',
             '=',
-            '(-1.345\\hat{i} + 0.1552\\hat{j}) + \\vec{\\omega}_{AD}\\times\\vec{r}_{AD}',
+            '(-1.345\\hat{i} + 0.1552\\hat{j}) + \\vec{\\omega}_{AD}\\times\\vec{r}_{D/A}',
             '=',
             '(-1.345\\hat{i} + 0.1552\\hat{j}) + |\\vec{\\omega}_{AD}|\\hat{k} \\times (-0.25\\cos(45^\\circ)\\hat{i} + 0.25\\sin(45^\\circ)\\hat{j})',
             '=',
