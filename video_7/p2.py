@@ -231,16 +231,8 @@ class T7P2(Scene):
             color=PURPLE
         ).add_tip(tip_length=0.15)
         omega_abc_annot = MathTex('\\omega_{ABC}', color=PURPLE).scale(0.6).next_to(omega_abc_arrow, UP, buff=0.15)
-        assume_text = Tex('Purple:', 'assumed value').scale(0.6).next_to(link_eb, LEFT, buff=2, aligned_edge=UP)
+        assume_text = Tex('Purple:', ' assumed value').scale(0.6).next_to(link_eb, LEFT, buff=2, aligned_edge=UP)
         assume_text[0].set_color(PURPLE)
-        self.play(
-            Write(assume_text),
-            Write(v_c_arrow),
-            Write(v_c_annot),
-            Write(omega_abc_arrow),
-            Write(omega_abc_annot)
-        )
-        self.wait()
 
         # Section BC
         eq_bc = MathTex(
@@ -278,6 +270,15 @@ class T7P2(Scene):
         ansgroup1 = Group(v_c_ans, ansbox1, omega_abc_ans)
 
         self.play(Write(title_link_abc))
+        self.wait()
+        self.play(
+            Write(assume_text),
+            Write(v_c_arrow),
+            Write(v_c_annot),
+            Write(omega_abc_arrow),
+            Write(omega_abc_annot)
+        )
+        self.wait()
         self.play(Write(eq_bc))
         self.wait()
         self.play(Write(eq_bc_sub[:3]))

@@ -185,7 +185,7 @@ class T7P3(Scene):
             color=PURPLE
         ).add_tip(tip_length=0.15)
         omega_cde_annot = MathTex('\\omega_{CDE}', color=PURPLE).scale(0.6).next_to(omega_cde_arrow, DOWN, buff=0.15)
-        assume_text = Tex('Purple:', 'assumed value').scale(0.6).next_to(link_adb, LEFT, buff=1, aligned_edge=UP)
+        assume_text = Tex('Purple:', ' assumed value').scale(0.6).next_to(link_adb, LEFT, buff=1, aligned_edge=UP)
         assume_text[0].set_color(PURPLE)
         self.play(
             Write(assume_text),
