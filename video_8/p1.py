@@ -1,0 +1,462 @@
+from manim import *
+import numpy as np
+
+GOLD_DARK = '#5c4326'
+EVERGREEN = '#077319'
+GREEN_DARK = '#2b4022'
+BLUE_DARK = '#26545e'
+BROWN = '#8f4a04'
+MED_DARK_GREY = '#666666'
+BLUE_E_DARK = '#0c343d'
+
+DIM_A=1.25
+
+
+class T8P1(Scene):
+    def construct(self):
+        attribution = Tex('Robin Liu, 2021', color=MED_DARK_GREY).scale(0.4).to_corner(DOWN+RIGHT, buff=0.2)
+        self.add(attribution)
+
+        #region Diagram objects
+        disk = Circle(
+            radius=DIM_A,
+            stroke_color=BLUE_E,
+            fill_color=BLUE_E_DARK,
+            stroke_width=10,
+            fill_opacity=1
+        )
+        disk_center = Dot(
+            point=disk.get_center(),
+            radius=0.1,
+            color=BLUE_E
+        )
+        disk_group = Group(disk, disk_center)
+        pin = Dot(
+            point=disk.get_edge_center(LEFT),
+            color=LIGHT_GRAY
+        )
+        rod = Line(
+            start=disk.get_edge_center(LEFT),
+            end=disk.get_edge_center(LEFT)+(DIM_A*2)*np.array([-np.cos(PI/6), -np.sin(PI/6), 0]),
+            color=RED_E,
+            stroke_width=15
+        )
+        ground = Rectangle(
+            width=7,
+            height=0.3,
+            color=GREY,
+            stroke_opacity=0,
+            fill_opacity=1
+        ).next_to(DIM_A*(LEFT+DOWN), DOWN, buff=0)
+        #endregion
+
+        diagram = Group(disk_group, rod, pin, ground).move_to(ORIGIN)
+        self.add(diagram)
+        self.wait()
+
+        #region annotate region
+        radius_arrow = DoubleArrow(
+            start=disk.get_center(),
+            end=disk.get_center()+DIM_A*np.array([np.cos(PI/4), np.sin(PI/4), 0]),
+            color=YELLOW,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.15,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        radius_annot = MathTex('a', color=YELLOW).scale(0.7).next_to(radius_arrow, UP+RIGHT, buff=0.15)
+        rodlength_arrow = DoubleArrow(
+            start=rod.get_start(),
+            end=rod.get_end(),
+            color=YELLOW,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.15,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(0.25*rod.copy().rotate(-PI/2).get_unit_vector())
+        rodlength_annot = MathTex(
+            '2a',
+            color=YELLOW
+        ).scale(0.7).next_to(rodlength_arrow.get_center(), rodlength_arrow.copy().rotate(-PI/2).get_unit_vector(), buff=0.15)
+
+        self.play(
+            Write(radius_arrow),
+            Write(radius_annot),
+            Write(rodlength_arrow),
+            Write(rodlength_annot)
+        )
+        self.wait()
+
+        diagram = Group(
+            diagram,
+            radius_arrow,
+            radius_annot,
+            rodlength_arrow,
+            rodlength_annot
+        )
+
+        diagram_newpos = diagram.copy().scale(0.6).to_corner(DOWN+RIGHT, buff=0.5)
+        rod_copy = rod.copy().set_opacity(0)
+        rod_newpos = rod.copy().scale(0.75).to_corner(UP+RIGHT, buff=1.25)
+        disk_copy = disk_group.copy()
+        for item in disk_copy:
+            item.set_opacity(0)
+        disk_newpos = disk_group.copy().scale(0.75).to_edge(RIGHT, buff=0.5)
+
+        self.play(
+            Transform(rod_copy, rod_newpos),
+            Transform(disk_copy, disk_newpos),
+            Transform(diagram, diagram_newpos)
+        )
+        self.wait()
+
+        #endregion
+
+        # adb = Line(
+        #     start=DSCALE*300*((3/5)*DOWN + (4/5)*RIGHT),
+        #     end=DSCALE*250*((3/5)*UP + (4/5)*LEFT),
+        #     color=BLUE,
+        #     stroke_width=15
+        # )
+        # point_a_adb = Dot(
+        #     point=adb.get_start(),
+        #     radius=0.15,
+        #     color=BLUE_E
+        # )
+        # point_d_adb = Dot(
+        #     point=ORIGIN,
+        #     radius=0.15,
+        #     color=BLUE_E
+        # )
+        # point_b_adb = Dot(
+        #     point=adb.get_end(),
+        #     radius=0.15,
+        #     color=BLUE_E
+        # )
+        # link_adb = Group(adb, point_a_adb, point_d_adb, point_b_adb)
+
+        # # Link CDE
+        # cde = Line(
+        #     start=DSCALE*400*np.array([-np.cos(PI/6), -np.sin(PI/6), 0]),
+        #     end=DSCALE*300*np.array([np.cos(PI/6), np.sin(PI/6), 0]),
+        #     color=RED_B,
+        #     stroke_width=15
+        # )
+        # point_c_cde = Dot(
+        #     point=cde.get_start(),
+        #     radius=0.15,
+        #     color=RED_E
+        # )
+        # point_d_cde = Dot(
+        #     point=ORIGIN,
+        #     radius=0.15,
+        #     color=RED_E
+        # )
+        # point_e_cde = Dot(
+        #     point=cde.get_end(),
+        #     radius=0.15,
+        #     color=RED_E
+        # )
+        # link_cde = Group(cde, point_c_cde, point_d_cde, point_e_cde)
+        # #endregion
+
+        # diagram = Group(link_adb, link_cde).move_to(ORIGIN)
+        # self.add(diagram)
+        # self.wait()
+
+        # # Separate the elements
+        # self.play(
+        #     Transform(link_adb, link_adb.copy().scale(0.6).to_corner(UP+RIGHT, buff=1).shift(0.5*LEFT)),
+        #     Transform(link_cde, link_cde.copy().scale(0.6).to_corner(DOWN+RIGHT, buff=1).shift(0.5*LEFT))
+        # )
+        # self.wait()
+
+        # # label points
+        # A_label1 = MathTex('A').scale(0.6).next_to(point_a_adb, RIGHT, buff=0.15)
+        # B_label1 = MathTex('B').scale(0.6).next_to(point_b_adb, LEFT, buff=0.15)
+        # C_label1 = MathTex('C').scale(0.6).next_to(point_c_cde, DOWN, buff=0.15)
+        # D_label1 = MathTex('D').scale(0.6).next_to(point_d_adb, DOWN+LEFT, buff=0.15)
+        # D_label2 = D_label1.copy().next_to(point_d_cde, UP+LEFT, buff=0.15)
+        # E_label1 = MathTex('E').scale(0.6).next_to(point_e_cde, RIGHT, buff=0.15)
+        # self.play(
+        #     Write(A_label1),
+        #     Write(B_label1),
+        #     Write(C_label1),
+        #     Write(D_label1),
+        #     Write(D_label2),
+        #     Write(E_label1),
+        # )
+        # self.wait()
+
+        # # label other stuff
+        # length_ad = MathTex('300\\,\\mathrm{mm}', color=YELLOW).scale(0.5).next_to((point_a_adb.get_center() + point_d_adb.get_center())/2, LEFT+DOWN, buff=0.1)
+        # length_db = MathTex('250\\,\\mathrm{mm}', color=YELLOW).scale(0.5).next_to((point_d_adb.get_center() + point_b_adb.get_center())/2, LEFT+DOWN, buff=0.1)
+        # length_cd = MathTex('400\\,\\mathrm{mm}', color=YELLOW).scale(0.5).next_to((point_c_cde.get_center() + point_d_cde.get_center())/2, LEFT+UP, buff=0.1)
+        # # Create coordinate system
+        # i_arrow = Arrow(
+        #     start=ORIGIN,
+        #     end=RIGHT,
+        #     color=YELLOW,
+        #     buff=0.0,
+        #     stroke_width=5,
+        #     tip_length=0.2,
+        #     max_stroke_width_to_length_ratio=999,
+        #     max_tip_length_to_length_ratio=1
+        # )
+        # i_label = MathTex('\\hat{i}', color=YELLOW).scale(0.7).next_to(i_arrow, RIGHT, buff=0.15)
+        # j_arrow = Arrow(
+        #     start=ORIGIN,
+        #     end=UP,
+        #     color=YELLOW,
+        #     buff=0.0,
+        #     stroke_width=5,
+        #     tip_length=0.2,
+        #     max_stroke_width_to_length_ratio=999,
+        #     max_tip_length_to_length_ratio=1
+        # )
+        # j_label = MathTex('\\hat{j}', color=YELLOW).scale(0.7).next_to(j_arrow, UP, buff=0.15)
+        # k_dot = Dot(
+        #     point=i_arrow.get_start(),
+        #     color=YELLOW
+        # )
+        # k_circle = Circle(
+        #     arc_center=k_dot.get_center(),
+        #     radius=0.2,
+        #     color=YELLOW
+        # )
+        # k_label = MathTex('\\hat{k}', color=YELLOW).scale(0.7).next_to(k_circle, LEFT, buff=0.15)
+        # coordsys = Group(i_arrow, j_arrow, i_label, j_label, k_dot, k_circle, k_label).scale(0.75).to_corner(DOWN+RIGHT, buff=0.75)
+        # self.play(
+        #     Write(length_ad),
+        #     Write(length_db),
+        #     Write(length_cd),
+        #     Write(i_arrow),
+        #     Write(j_arrow),
+        #     Write(i_label),
+        #     Write(j_label),
+        #     Write(k_dot),
+        #     Write(k_circle),
+        #     Write(k_label),
+        # )
+        # self.wait()
+
+        # # Label velocity assumptions.
+        # v_b_arrow = Arrow(
+        #     start=point_b_adb.get_center(),
+        #     end=point_b_adb.get_center()+RIGHT,
+        #     color=PURPLE,
+        #     buff=0.0,
+        #     stroke_width=5,
+        #     tip_length=0.15,
+        #     max_stroke_width_to_length_ratio=999,
+        #     max_tip_length_to_length_ratio=1
+        # )
+        # v_b_label = MathTex('\\vec{v}_B').scale(0.6).next_to(v_b_arrow, RIGHT, buff=0.15)
+        # v_c_arrow = Arrow(
+        #     start=point_c_cde.get_center(),
+        #     end=point_c_cde.get_center()+LEFT,
+        #     color=PURPLE,
+        #     buff=0.0,
+        #     stroke_width=5,
+        #     tip_length=0.15,
+        #     max_stroke_width_to_length_ratio=999,
+        #     max_tip_length_to_length_ratio=1
+        # )
+        # v_c_label = MathTex('\\vec{v}_C').scale(0.6).next_to(v_c_arrow, LEFT, buff=0.15)
+        # omega_adb_arrow = Arc(
+        #     radius=0.25,
+        #     arc_center=link_adb.get_center()+RIGHT,
+        #     start_angle=-3*PI/4,
+        #     angle=-1.5*PI,
+        #     color=PURPLE
+        # ).add_tip(tip_length=0.15)
+        # omega_adb_annot = MathTex('\\omega_{ADB}', color=PURPLE).scale(0.6).next_to(omega_adb_arrow, UP, buff=0.15)
+        # omega_cde_arrow = Arc(
+        #     radius=0.25,
+        #     arc_center=link_cde.get_center()+DOWN,
+        #     start_angle=-3*PI/4,
+        #     angle=-1.5*PI,
+        #     color=PURPLE
+        # ).add_tip(tip_length=0.15)
+        # omega_cde_annot = MathTex('\\omega_{CDE}', color=PURPLE).scale(0.6).next_to(omega_cde_arrow, DOWN, buff=0.15)
+        # assume_text = Tex('Purple:', ' assumed value').scale(0.6).next_to(link_adb, LEFT, buff=1, aligned_edge=UP)
+        # assume_text[0].set_color(PURPLE)
+        # self.play(
+        #     Write(assume_text),
+        #     Write(v_b_arrow),
+        #     Write(v_b_label),
+        #     Write(v_c_arrow),
+        #     Write(v_c_label),
+        #     Write(omega_adb_arrow),
+        #     Write(omega_adb_annot),
+        #     Write(omega_cde_arrow),
+        #     Write(omega_cde_annot)
+        # )
+        # self.wait()
+
+        # #region Math it out
+
+        # title_link_adb = Tex('Link ADB:', color=YELLOW).scale(0.5).to_corner(UP+LEFT)
+        # #region Link ab
+        # eq_ab = MathTex(
+        #     '\\vec{v}_B = \\vec{v}_A + \\vec{v}_{B/A}'
+        # ).scale(0.55).next_to(title_link_adb, DOWN, aligned_edge=LEFT)
+        # eq_ab_sub = MathTex(
+        #     '|\\vec{v}_B|\\hat{i}',
+        #     '=',
+        #     '-4\\hat{j} + \\vec{\\omega}_{ADB}\\times\\vec{r}_{B/A}',
+        #     '=',
+        #     '-4\\hat{j} + -|\\vec{\\omega}_{ADB}|\\hat{k} \\times \\left(-0.55\\left(\\frac{4}{5}\\right)\\hat{i} + 0.55\\left(\\frac{3}{5}\\right)\\hat{j}\\right)',
+        #     '=',
+        #     '0.33|\\vec{\\omega}_{ADB}|\\hat{i} + (0.44|\\vec{\\omega}_{ADB}| - 4)\\hat{j}',
+        # ).scale(0.55).next_to(eq_ab, DOWN, buff=0.2, aligned_edge=LEFT)
+        # eq_ab_sub[3:].next_to(eq_ab_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        # eq_ab_sub[5:].next_to(eq_ab_sub[3:5], DOWN, aligned_edge=LEFT, buff=0.15)
+        # eq_ab_dir_i = MathTex(
+        #     '\\hat{i}:',
+        #     '|\\vec{v}_B|',
+        #     '=',
+        #     '0.33|\\vec{\\omega}_{ADB}|'
+        # ).scale(0.55).next_to(eq_ab_sub, DOWN, aligned_edge=LEFT, buff=0.2).shift(0.5*RIGHT)
+        # eq_ab_dir_i[0].set_color(YELLOW)
+        # eq_ab_dir_j = MathTex(
+        #     '\\hat{j}:',
+        #     '0',
+        #     '=',
+        #     '0.44|\\vec{\\omega}_{ADB}| - 4',
+        # ).scale(0.55).next_to(eq_ab_dir_i, DOWN, aligned_edge=LEFT, buff=0.2)
+        # eq_ab_dir_j[0].set_color(YELLOW)
+
+        # v_b_ans = MathTex('|\\vec{v}_B| = 3.00\\,\\mathrm{m/s}').scale(0.55).next_to(eq_ab_dir_j, DOWN, aligned_edge=LEFT)
+        # omega_ab_ans = MathTex('|\\vec{\\omega}_{ADB}|=9.091\\,\\mathrm{rad/s}').scale(0.55).next_to(v_b_ans, DOWN, aligned_edge=LEFT)
+        # ansgroup1 = Group(v_b_ans, omega_ab_ans)
+
+        # self.play(Write(title_link_adb))
+        # self.play(Write(eq_ab))
+        # self.wait()
+        # self.play(Write(eq_ab_sub[:3]))
+        # self.wait()
+        # self.play(Write(eq_ab_sub[3:5]))
+        # self.wait()
+        # self.play(Write(eq_ab_sub[5:]))
+        # self.wait()
+        # self.play(
+        #     Write(eq_ab_dir_i),
+        #     Write(eq_ab_dir_j)
+        # )
+        # self.wait()
+        # self.play(
+        #     Write(v_b_ans),
+        #     Write(omega_ab_ans)
+        # )
+        # self.wait()
+        # self.play(
+        #     FadeOut(eq_ab),
+        #     FadeOut(eq_ab_sub),
+        #     FadeOut(eq_ab_dir_i),
+        #     FadeOut(eq_ab_dir_j),
+        #     Transform(ansgroup1, ansgroup1.copy().next_to(title_link_adb, DOWN, aligned_edge=LEFT, buff=0.15))
+        # )
+        # self.wait()
+        # #endregion
+
+        # #region link ad
+        # eq_ad = MathTex(
+        #     '\\vec{v}_D = \\vec{v}_A + \\vec{v}_{D/A}'
+        # ).scale(0.55).next_to(ansgroup1, DOWN, aligned_edge=LEFT)
+        # eq_ad_sub = MathTex(
+        #     '\\vec{v}_D',
+        #     '=',
+        #     '-4\\hat{j} + \\vec{\\omega}_{ADB}\\times\\vec{r}_{B/A}',
+        #     '=',
+        #     '-4\\hat{j} + -9.091\\hat{k} \\times \\left(-0.3\\left(\\frac{4}{5}\\right)\\hat{i} + 0.3\\left(\\frac{3}{5}\\right)\\hat{j}\\right)',
+        #     '\\Rightarrow',
+        #     '\\vec{v}_D = [1.636\\hat{i} - 1.818\\hat{j}]\\,\\mathrm{m/s}',
+        # ).scale(0.55).next_to(eq_ad, DOWN, buff=0.2, aligned_edge=LEFT)
+        # eq_ad_sub[3:].next_to(eq_ad_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        # eq_ad_sub[5:].next_to(eq_ad_sub[3:5], DOWN, aligned_edge=LEFT, buff=0.15)
+
+        # self.play(Write(eq_ad))
+        # self.wait()
+        # self.play(Write(eq_ad_sub[:3]))
+        # self.wait()
+        # self.play(Write(eq_ad_sub[3:5]))
+        # self.wait()
+        # self.play(Write(eq_ad_sub[5:]))
+        # self.wait()
+        # self.play(
+        #     FadeOut(eq_ad),
+        #     FadeOut(eq_ad_sub[:-1]),
+        #     Transform(eq_ad_sub[-1], eq_ad_sub[-1].copy().next_to(ansgroup1, DOWN, aligned_edge=LEFT))
+        # )
+        # self.wait()
+        # #endregion
+
+        # title_link_cde = Tex('Link CDE:', color=YELLOW).scale(0.5).next_to(eq_ad_sub[-1], DOWN, aligned_edge=LEFT)
+        # #region Link dc
+        # eq_dc = MathTex(
+        #     '\\vec{v}_C = \\vec{v}_D + \\vec{v}_{C/D}'
+        # ).scale(0.55).next_to(title_link_cde, DOWN, aligned_edge=LEFT)
+        # eq_dc_sub = MathTex(
+        #     '-|\\vec{v}_C|\\hat{i}',
+        #     '=',
+        #     '(1.636\\hat{i} - 1.818\\hat{j}) + \\vec{\\omega}_{CDE}\\times\\vec{r}_{C/D}',
+        #     '=',
+        #     '(1.636\\hat{i} - 1.818\\hat{j}) + -|\\vec{\\omega}_{CDE}|\\hat{k} \\times (-0.4\\cos(30^\\circ)\\hat{i} - 0.4\\sin(30^\\circ)\\hat{j})',
+        #     '=',
+        #     '(1.636 - 0.2|\\vec{\\omega}_{CDE}|)\\hat{i} + (0.3464|\\vec{\\omega}_{CDE}| - 1.818)\\hat{j}',
+        # ).scale(0.55).next_to(eq_dc, DOWN, buff=0.2, aligned_edge=LEFT)
+        # eq_dc_sub[3:].next_to(eq_dc_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        # eq_dc_sub[5:].next_to(eq_dc_sub[3:5], DOWN, aligned_edge=LEFT, buff=0.15)
+        # eq_dc_dir_i = MathTex(
+        #     '\\hat{i}:',
+        #     '-|\\vec{v}_C|',
+        #     '=',
+        #     '1.636 - 0.2|\\vec{\\omega}_{CDE}|'
+        # ).scale(0.55).next_to(eq_dc_sub, DOWN, aligned_edge=LEFT, buff=0.2).shift(0.5*RIGHT)
+        # eq_dc_dir_i[0].set_color(YELLOW)
+        # eq_dc_dir_j = MathTex(
+        #     '\\hat{j}:',
+        #     '0',
+        #     '=',
+        #     '0.3464|\\vec{\\omega}_{CDE}| - 1.818',
+        # ).scale(0.55).next_to(eq_dc_dir_i, DOWN, aligned_edge=LEFT, buff=0.2)
+        # eq_dc_dir_j[0].set_color(YELLOW)
+
+        # v_c_ans = MathTex('|\\vec{v}_C| = -0.587\\,\\mathrm{m/s}').scale(0.55).next_to(eq_dc_dir_j, DOWN, aligned_edge=LEFT)
+        # omega_cde_ans = MathTex('|\\vec{\\omega}_{CDE}|=5.249\\,\\mathrm{rad/s}').scale(0.55).next_to(v_c_ans, DOWN, aligned_edge=LEFT)
+        # ansbox = SurroundingRectangle(v_c_ans)
+        # ansgroup2 = Group(v_c_ans, ansbox, omega_cde_ans)
+
+        # self.play(Write(title_link_cde))
+        # self.play(Write(eq_dc))
+        # self.wait()
+        # self.play(Write(eq_dc_sub[:3]))
+        # self.wait()
+        # self.play(Write(eq_dc_sub[3:5]))
+        # self.wait()
+        # self.play(Write(eq_dc_sub[5:]))
+        # self.wait()
+        # self.play(
+        #     Write(eq_dc_dir_i),
+        #     Write(eq_dc_dir_j)
+        # )
+        # self.wait()
+        # self.play(
+        #     Write(v_c_ans),
+        #     Write(omega_cde_ans)
+        # )
+        # self.play(ShowCreation(ansbox))
+        # self.wait()
+        # self.play(
+        #     FadeOut(eq_dc),
+        #     FadeOut(eq_dc_sub),
+        #     FadeOut(eq_dc_dir_i),
+        #     FadeOut(eq_dc_dir_j),
+        #     Transform(ansgroup2, ansgroup2.copy().next_to(title_link_cde, DOWN, aligned_edge=LEFT, buff=0.15))
+        # )
+        # self.wait()
+        # #endregion
+        # #endregion
