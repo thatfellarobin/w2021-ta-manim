@@ -173,7 +173,7 @@ class T8P1(Scene):
         self.wait()
         #endregion
 
-        #region Math it out
+        #region Velocity
         # Velocity of A
         r_AR_arrow = Arrow(
             start=fixed_point.get_center(),
@@ -244,6 +244,7 @@ class T8P1(Scene):
             angle=1.5*PI,
             color=PURPLE
         ).add_tip(tip_length=0.15)
+        omega_ab_arrow.move_arc_center_to(rod_copy.get_center())
         omega_ab_annot = MathTex('\\omega_{AB}', color=PURPLE).scale(0.6).next_to(omega_ab_arrow, UP, buff=0.15)
         self.play(
             Write(assume_text),
@@ -313,8 +314,13 @@ class T8P1(Scene):
         )
         self.wait(0.5)
         self.play(
-            Write(v_b_ans),
-            Write(omega_ab_ans)
+            Write(v_b_ans[0]),
+            Write(omega_ab_ans[0])
+        )
+        self.wait(0.5)
+        self.play(
+            Write(v_b_ans[1:]),
+            Write(omega_ab_ans[1:])
         )
         self.play(ShowCreation(ansbox1))
         self.wait()
@@ -331,5 +337,77 @@ class T8P1(Scene):
         self.wait()
         #endregion
 
+        #region Acceleration
 
+        #region Explain pure rolling acceleration
+        point_O = Dot(
+            point=disk_copy.get_center(),
+            color=YELLOW
+        )
+        point_O_annot = MathTex('O', color=YELLOW).scale(0.6).next_to(point_O, UP+RIGHT, buff=0)
+        self.play(
+            FadeIn(point_O),
+            Write(point_O_annot)
+        )
+        for _ in range(2):
+            self.play(Flash(point_O))
+        a_O_arrow = Arrow(
+            start=point_O.get_center(),
+            end=point_O.get_center()+0.75*LEFT,
+            color=TEAL_D,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.15,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        a_O_label = MathTex('a_O', color=TEAL_D).scale(0.6).next_to(a_O_arrow.get_center(), UP, buff=0.15)
+        self.play(
+            Write(a_O_arrow),
+            Write(a_O_label)
+        )
+        self.wait()
+
+        a_O_eq = MathTex(
+            '\\vec{a}_O = \\vec{r}_{R/O}\\times\\vec{\\alpha}',
+            '\\Rightarrow',
+            '\\vec{a}_O = -a\\alpha\\hat{i}'
+        ).scale(0.55).next_to(ansgroup1, DOWN, aligned_edge=LEFT)
+        self.play(Write(a_O_eq[0]))
+        self.wait()
+        self.play(Write(a_O_eq[1:]))
+        self.wait()
+        #endregion
+
+        # Acceleration of A
+        eq_a_accel = MathTex(
+            '\\vec{a}_A = \\vec{a}_O + \\vec{\\alpha}_{OA}\\times\\vec{r}_{A/O} - |\\vec{\\omega}_{OA}|^2\\vec{r}_{A/O}'
+        ).scale(0.55).next_to(a_O_eq, DOWN, aligned_edge=LEFT)
+        eq_a_accel_sub = MathTex(
+            '\\vec{a}_A',
+            '=',
+            '-a\\alpha\\hat{i} + (\\alpha\\hat{k}\\times (-a\\hat{i})) - \\omega^2 (-a\\hat{i})',
+            '=',
+            '-a\\alpha\\hat{i} - a\\alpha\\hat{j} + a\\omega^2\\hat{i}',
+            '\\Rightarrow',
+            '\\vec{a}_A = a(\\omega^2-\\alpha)\\hat{i} - a\\alpha\\hat{j}',
+        ).scale(0.55).next_to(eq_a_accel, DOWN, buff=0.2, aligned_edge=LEFT)
+        eq_a_accel_sub[3:].next_to(eq_a_accel_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        eq_a_accel_sub[5:].next_to(eq_a_accel_sub[3:5], DOWN, aligned_edge=LEFT, buff=0.15)
+
+        self.play(Write(eq_a_accel))
+        self.wait()
+        self.play(Write(eq_a_accel_sub[:3]))
+        self.wait(0.5)
+        self.play(Write(eq_a_accel_sub[3:5]))
+        self.wait(0.5)
+        self.play(Write(eq_a_accel_sub[5:]))
+        self.wait()
+        self.play(
+            FadeOut(eq_a_accel),
+            FadeOut(eq_a_accel_sub[:-1]),
+            Transform(eq_a_accel_sub[-1], eq_a_accel_sub[-1].copy().next_to(a_O_eq, DOWN, aligned_edge=LEFT))
+        )
+        self.wait()
+        #endregion
 
