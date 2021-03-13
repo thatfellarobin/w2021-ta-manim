@@ -272,8 +272,141 @@ class T8P2(Scene):
         self.play(Write(point_IC_annot))
         self.wait()
 
+        sim_triang_eq = MathTex(
+            '\\frac{3}{r_{O/IC}}',
+            '=',
+            '\\frac{2}{r_{A/IC}}'
+        ).scale(0.55).to_corner(UP+LEFT, buff=0.5)
+        sim_triang_eq_subbed = MathTex(
+            '\\frac{3}{r_{O/IC}}',
+            '=',
+            '\\frac{2}{0.15-r_{O/IC}}'
+        ).scale(0.55)
+        sim_triang_eq_subbed.shift(sim_triang_eq[1].get_center() - sim_triang_eq_subbed[1].get_center())
+        self.play(Write(sim_triang_eq))
+        self.wait()
+        self.play(*[ReplacementTransform(sim_triang_eq[i], sim_triang_eq_subbed[i]) for i in range(len(sim_triang_eq))])
+        self.wait()
+        sim_triang_result = MathTex(
+            'r_{O/IC} = 0.09\\,\\mathrm{m}'
+        ).scale(0.55).next_to(sim_triang_eq_subbed, RIGHT, buff=1)
+        omega_eq = MathTex(
+            '\\vec{\\omega} = \\frac{v_O}{r_{O/IC}}(-\\hat{k}) = \\frac{3}{0.09}(-\\hat{k})',
+            '\\vec{\\omega} = -33.33\\hat{k}\\,\\mathrm{rad/s}'
+        ).scale(0.55).next_to(sim_triang_eq_subbed, DOWN, aligned_edge=LEFT)
+        omega_eq[1].next_to(omega_eq[0], DOWN, aligned_edge=LEFT)
+
+        self.play(Write(sim_triang_result))
+        self.wait()
+        self.play(Write(omega_eq[0]))
+        self.wait()
+        self.play(Write(omega_eq[1]))
+        self.wait()
+        sim_triang_result_newpos = sim_triang_result.copy().to_corner(UP+LEFT, buff=0.5)
+        omega_eq_newpos = omega_eq[1].copy().next_to(sim_triang_result_newpos, RIGHT, aligned_edge=DOWN, buff=0.75)
+        self.play(
+            FadeOut(sim_triang_eq),
+            FadeOut(sim_triang_eq_subbed),
+            FadeOut(omega_eq[0]),
+            Transform(sim_triang_result, sim_triang_result_newpos),
+            Transform(omega_eq[1], omega_eq_newpos)
+        )
+        self.wait()
         #endregion
 
+        #region Acceleration relation of A and O
+        # Assumed directions
+        assume_text = Tex('Purple:', ' assumed direction').scale(0.6).to_corner(UP+RIGHT)
+        assume_text[0].set_color(PURPLE)
+        a_An_arrow = Arrow(
+            start=gear_copy.get_edge_center(DOWN),
+            end=gear_copy.get_edge_center(DOWN)+0.75*UP,
+            color=PURPLE,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.15,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        a_An_label = MathTex('\\vec{a}_{A,n}', color=PURPLE).scale(0.6).next_to(a_An_arrow.get_end(), RIGHT, buff=0.15)
+        alpha_ab_arrow = Arc(
+            radius=0.2,
+            start_angle=PI,
+            angle=1.5*PI,
+            color=PURPLE
+        ).add_tip(tip_length=0.15)
+        alpha_ab_arrow.move_arc_center_to(gear_copy.get_center())
+        alpha_ab_annot = MathTex('\\alpha', color=PURPLE).scale(0.6).next_to(alpha_ab_arrow, UP, buff=0.15)
+        self.play(
+            Write(assume_text),
+            Write(a_An_arrow),
+            Write(a_An_label),
+            Write(alpha_ab_arrow),
+            Write(alpha_ab_annot)
+        )
+        self.wait()
+        # Math
+        eq_ab_accel = MathTex(
+            '\\vec{a}_A = \\vec{a}_O + \\vec{\\alpha}\\times\\vec{r}_{A/O} - |\\vec{\\omega}|^2\\vec{r}_{A/O}'
+        ).scale(0.55).next_to(sim_triang_result, DOWN, aligned_edge=LEFT)
+        eq_ab_accel_sub = MathTex(
+            '-3\\hat{i} + |\\vec{a}_{A,n}|\\hat{j}',
+            '=',
+            '6\\hat{i} + |\\vec{\\alpha}|\\hat{k} \\times (-0.15\\hat{j}) - 33.33^2 (-0.15\\hat{j})',
+            '=',
+            '(6+0.15|\\vec{\\alpha}|)\\hat{i} + 166.67\\hat{j}'
+        ).scale(0.55).next_to(eq_ab_accel, DOWN, buff=0.2, aligned_edge=LEFT)
+        eq_ab_accel_sub[3:].next_to(eq_ab_accel_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        eq_ab_accel_dir_i = MathTex(
+            '\\hat{i}:',
+            '-3',
+            '=',
+            '6+0.15|\\vec{\\alpha}|'
+        ).scale(0.55).next_to(eq_ab_accel_sub, DOWN, aligned_edge=LEFT, buff=0.2).shift(0.5*RIGHT)
+        eq_ab_accel_dir_i[0].set_color(YELLOW)
+        eq_ab_accel_dir_j = MathTex(
+            '\\hat{j}:',
+            '|\\vec{a}_{A,n}|',
+            '=',
+            '166.67',
+        ).scale(0.55).next_to(eq_ab_accel_dir_i, DOWN, aligned_edge=LEFT, buff=0.2)
+        eq_ab_accel_dir_j[0].set_color(YELLOW)
+
+        alpha_ab_ans = MathTex(
+            '|\\vec{\\alpha}| = -60\\,\\mathrm{rad/s^2}',
+            '\\Rightarrow',
+            '\\vec{\\alpha} = -60\\hat{k}'
+        ).scale(0.55).next_to(eq_ab_accel_dir_j, DOWN, aligned_edge=LEFT).shift(0.5*LEFT)
+        ansbox1 = SurroundingRectangle(alpha_ab_ans[-1])
+        ansgroup1 = Group(alpha_ab_ans[-1], ansbox1)
+
+        self.play(Write(eq_ab_accel))
+        self.wait()
+        self.play(Write(eq_ab_accel_sub[:3]))
+        self.wait(0.5)
+        self.play(Write(eq_ab_accel_sub[3:]))
+        self.wait(0.5)
+        self.play(
+            Write(eq_ab_accel_dir_i),
+            Write(eq_ab_accel_dir_j)
+        )
+        self.wait(0.5)
+        self.play(Write(alpha_ab_ans[0]))
+        self.wait(0.5)
+        self.play(Write(alpha_ab_ans[1:]))
+        self.play(ShowCreation(ansbox1))
+        self.wait()
+
+        self.play(
+            FadeOut(eq_ab_accel),
+            FadeOut(eq_ab_accel_sub),
+            FadeOut(eq_ab_accel_dir_i),
+            FadeOut(eq_ab_accel_dir_j),
+            FadeOut(alpha_ab_ans[:-1]),
+            Transform(ansgroup1, ansgroup1.copy().next_to(sim_triang_result, DOWN, aligned_edge=LEFT))
+        )
+        self.wait()
+        #endregion
 
 
         #endregion
