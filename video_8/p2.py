@@ -231,7 +231,7 @@ class T8P2(Scene):
             max_tip_length_to_length_ratio=1
         )
         rack_move_annot2 = MathTex(
-            'v_P = 2\\,\\mathrm{m/s}',
+            'v_A = v_P = 2\\,\\mathrm{m/s}',
             color=YELLOW
         ).scale(0.6).next_to(rack_move_arrow2, LEFT, buff=0.1)
         self.play(
@@ -320,7 +320,7 @@ class T8P2(Scene):
         assume_text[0].set_color(PURPLE)
         a_An_arrow = Arrow(
             start=gear_copy.get_edge_center(DOWN),
-            end=gear_copy.get_edge_center(DOWN)+0.75*UP,
+            end=gear_copy.get_edge_center(DOWN)+0.7*UP,
             color=PURPLE,
             buff=0.0,
             stroke_width=5,
@@ -329,84 +329,108 @@ class T8P2(Scene):
             max_tip_length_to_length_ratio=1
         )
         a_An_label = MathTex('\\vec{a}_{A,n}', color=PURPLE).scale(0.6).next_to(a_An_arrow.get_end(), RIGHT, buff=0.15)
-        alpha_ab_arrow = Arc(
+        alpha_arrow = Arc(
             radius=0.2,
             start_angle=PI,
             angle=1.5*PI,
             color=PURPLE
         ).add_tip(tip_length=0.15)
-        alpha_ab_arrow.move_arc_center_to(gear_copy.get_center())
-        alpha_ab_annot = MathTex('\\alpha', color=PURPLE).scale(0.6).next_to(alpha_ab_arrow, UP, buff=0.15)
+        alpha_arrow.move_arc_center_to(gear_copy.get_center())
+        alpha_annot = MathTex('\\alpha', color=PURPLE).scale(0.6).next_to(alpha_arrow, UP, buff=0.15)
         self.play(
             Write(assume_text),
             Write(a_An_arrow),
             Write(a_An_label),
-            Write(alpha_ab_arrow),
-            Write(alpha_ab_annot)
+            Write(alpha_arrow),
+            Write(alpha_annot)
         )
         self.wait()
         # Math
-        eq_ab_accel = MathTex(
+        eq_ao_accel = MathTex(
             '\\vec{a}_A = \\vec{a}_O + \\vec{\\alpha}\\times\\vec{r}_{A/O} - |\\vec{\\omega}|^2\\vec{r}_{A/O}'
         ).scale(0.55).next_to(sim_triang_result, DOWN, aligned_edge=LEFT)
-        eq_ab_accel_sub = MathTex(
+        eq_ao_accel_sub = MathTex(
             '-3\\hat{i} + |\\vec{a}_{A,n}|\\hat{j}',
             '=',
             '6\\hat{i} + |\\vec{\\alpha}|\\hat{k} \\times (-0.15\\hat{j}) - 33.33^2 (-0.15\\hat{j})',
             '=',
             '(6+0.15|\\vec{\\alpha}|)\\hat{i} + 166.67\\hat{j}'
-        ).scale(0.55).next_to(eq_ab_accel, DOWN, buff=0.2, aligned_edge=LEFT)
-        eq_ab_accel_sub[3:].next_to(eq_ab_accel_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
-        eq_ab_accel_dir_i = MathTex(
+        ).scale(0.55).next_to(eq_ao_accel, DOWN, buff=0.2, aligned_edge=LEFT)
+        eq_ao_accel_sub[3:].next_to(eq_ao_accel_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        eq_ao_accel_dir_i = MathTex(
             '\\hat{i}:',
             '-3',
             '=',
             '6+0.15|\\vec{\\alpha}|'
-        ).scale(0.55).next_to(eq_ab_accel_sub, DOWN, aligned_edge=LEFT, buff=0.2).shift(0.5*RIGHT)
-        eq_ab_accel_dir_i[0].set_color(YELLOW)
-        eq_ab_accel_dir_j = MathTex(
+        ).scale(0.55).next_to(eq_ao_accel_sub, DOWN, aligned_edge=LEFT, buff=0.2).shift(0.5*RIGHT)
+        eq_ao_accel_dir_i[0].set_color(YELLOW)
+        eq_ao_accel_dir_j = MathTex(
             '\\hat{j}:',
             '|\\vec{a}_{A,n}|',
             '=',
             '166.67',
-        ).scale(0.55).next_to(eq_ab_accel_dir_i, DOWN, aligned_edge=LEFT, buff=0.2)
-        eq_ab_accel_dir_j[0].set_color(YELLOW)
+        ).scale(0.55).next_to(eq_ao_accel_dir_i, DOWN, aligned_edge=LEFT, buff=0.2)
+        eq_ao_accel_dir_j[0].set_color(YELLOW)
 
-        alpha_ab_ans = MathTex(
+        alpha_ao_ans = MathTex(
             '|\\vec{\\alpha}| = -60\\,\\mathrm{rad/s^2}',
             '\\Rightarrow',
             '\\vec{\\alpha} = -60\\hat{k}'
-        ).scale(0.55).next_to(eq_ab_accel_dir_j, DOWN, aligned_edge=LEFT).shift(0.5*LEFT)
-        ansbox1 = SurroundingRectangle(alpha_ab_ans[-1])
-        ansgroup1 = Group(alpha_ab_ans[-1], ansbox1)
+        ).scale(0.55).next_to(eq_ao_accel_dir_j, DOWN, aligned_edge=LEFT).shift(0.5*LEFT)
+        ansbox1 = SurroundingRectangle(alpha_ao_ans[-1])
+        ansgroup1 = Group(alpha_ao_ans[-1], ansbox1)
 
-        self.play(Write(eq_ab_accel))
+        self.play(Write(eq_ao_accel))
         self.wait()
-        self.play(Write(eq_ab_accel_sub[:3]))
+        self.play(Write(eq_ao_accel_sub[:3]))
         self.wait(0.5)
-        self.play(Write(eq_ab_accel_sub[3:]))
+        self.play(Write(eq_ao_accel_sub[3:]))
         self.wait(0.5)
         self.play(
-            Write(eq_ab_accel_dir_i),
-            Write(eq_ab_accel_dir_j)
+            Write(eq_ao_accel_dir_i),
+            Write(eq_ao_accel_dir_j)
         )
         self.wait(0.5)
-        self.play(Write(alpha_ab_ans[0]))
+        self.play(Write(alpha_ao_ans[0]))
         self.wait(0.5)
-        self.play(Write(alpha_ab_ans[1:]))
+        self.play(Write(alpha_ao_ans[1:]))
         self.play(ShowCreation(ansbox1))
         self.wait()
 
         self.play(
-            FadeOut(eq_ab_accel),
-            FadeOut(eq_ab_accel_sub),
-            FadeOut(eq_ab_accel_dir_i),
-            FadeOut(eq_ab_accel_dir_j),
-            FadeOut(alpha_ab_ans[:-1]),
+            FadeOut(eq_ao_accel),
+            FadeOut(eq_ao_accel_sub),
+            FadeOut(eq_ao_accel_dir_i),
+            FadeOut(eq_ao_accel_dir_j),
+            FadeOut(alpha_ao_ans[:-1]),
             Transform(ansgroup1, ansgroup1.copy().next_to(sim_triang_result, DOWN, aligned_edge=LEFT))
         )
         self.wait()
         #endregion
 
+        #region Acceleration relation of B and O
+        # Math
+        eq_bo_accel = MathTex(
+            '\\vec{a}_B = \\vec{a}_O + \\vec{\\alpha}\\times\\vec{r}_{B/O} - |\\vec{\\omega}|^2\\vec{r}_{B/O}'
+        ).scale(0.55).next_to(ansgroup1, DOWN, aligned_edge=LEFT)
+        eq_bo_accel_sub = MathTex(
+            '\\vec{a}_B',
+            '=',
+            '6\\hat{i} + -60\\hat{k} \\times 0.15\\hat{j} - 33.33^2 (0.15\\hat{j})',
+            '\\Rightarrow',
+            '\\vec{a}_B = 15\\hat{i} - 166.67\\hat{j}'
+        ).scale(0.55).next_to(eq_bo_accel, DOWN, buff=0.2, aligned_edge=LEFT)
+        eq_bo_accel_sub[3:].next_to(eq_bo_accel_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        ansbox2 = SurroundingRectangle(eq_bo_accel_sub[-1])
+        ansgroup2 = Group(eq_bo_accel_sub[-1], ansbox2)
+
+        self.play(Write(eq_bo_accel))
+        self.wait()
+        self.play(Write(eq_bo_accel_sub[:3]))
+        self.wait()
+        self.play(Write(eq_bo_accel_sub[3:]))
+        self.play(ShowCreation(ansbox2))
+        self.wait()
+        #endregion
 
         #endregion
