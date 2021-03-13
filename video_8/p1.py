@@ -263,7 +263,7 @@ class T8P1(Scene):
             '=',
             '-a\\omega\\hat{i}-a\\omega\\hat{j} + \\vec{\\omega}_{AB}\\times\\vec{r}_{B/A}',
             '=',
-            '-a\\omega\\hat{i}-a\\omega\\hat{j} + |\\vec{\\omega}_{AB}|\\hat{k} \\times (-2a\\cos(30^\\circ)\\hat{i} + -a\\hat{j})',
+            '-a\\omega\\hat{i}-a\\omega\\hat{j} + |\\vec{\\omega}_{AB}|\\hat{k} \\times (-2a\\cos(30^\\circ)\\hat{i} -a\\hat{j})',
             '=',
             '-a\\omega\\hat{i}-a\\omega\\hat{j} + a|\\vec{\\omega}_{AB}|\\hat{i}-2a\\cos(30^\\circ)|\\vec{\\omega}_{AB}|\\hat{j}',
         ).scale(0.55).next_to(eq_b, DOWN, buff=0.2, aligned_edge=LEFT)
@@ -408,6 +408,77 @@ class T8P1(Scene):
             FadeOut(eq_a_accel_sub[:-1]),
             Transform(eq_a_accel_sub[-1], eq_a_accel_sub[-1].copy().next_to(a_O_eq, DOWN, aligned_edge=LEFT))
         )
+        self.wait()
+
+        # Acceleration of B
+        # Label assumptions
+        a_b_label = MathTex('\\vec{v}_B,\\,\\vec{a}_B', color=PURPLE).scale(0.6).next_to(v_b_arrow, RIGHT, buff=0.15)
+        alpha_ab_annot = MathTex('\\omega_{AB},\\,\\alpha_{AB}', color=PURPLE).scale(0.6).next_to(omega_ab_arrow, UP, buff=0.15)
+        self.play(
+            ReplacementTransform(v_b_label, a_b_label),
+            ReplacementTransform(omega_ab_annot, alpha_ab_annot)
+        )
+        self.wait()
+
+        eq_b_accel = MathTex(
+            '\\vec{a}_B = \\vec{a}_A + \\vec{\\alpha}_{AB}\\times\\vec{r}_{B/A} - |\\vec{\\omega}_{AB}|^2\\vec{r}_{B/A}'
+        ).scale(0.55).next_to(eq_a_accel_sub[-1], DOWN, aligned_edge=LEFT)
+        eq_b_accel_sub = MathTex(
+            '|\\vec{a}_B|\\hat{i}',
+            '=',
+            '(a(\\omega^2-\\alpha)\\hat{i} - a\\alpha\\hat{j}) + (|\\vec{\\alpha}_{AB}|\\hat{k}\\times (-2a\\cos(30^\\circ)\\hat{i} - a\\hat{j})) - (0.577\\omega)^2 (-2a\\cos(30^\\circ)\\hat{i} - a\\hat{j})',
+            '=',
+            '(a(\\omega^2-\\alpha)\\hat{i} - a\\alpha\\hat{j}) - |\\vec{\\alpha}_{AB}|(-a\\hat{i}+2a\\cos(30^\\circ)\\hat{j}) + 0.333a\\omega^2(2\\cos(30^\\circ)\\hat{i} + \\hat{j})'
+        ).scale(0.55).next_to(eq_b_accel, DOWN, buff=0.2, aligned_edge=LEFT)
+        eq_b_accel_sub[3:].next_to(eq_b_accel_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        eq_b_accel_dir_i = MathTex(
+            '\\hat{i}:',
+            '|\\vec{a}_B|',
+            '=',
+            'a(\\omega^2-\\alpha) + a|\\vec{\\alpha}_{AB}| + 0.577a\\omega^2'
+        ).scale(0.55).next_to(eq_b_accel_sub, DOWN, aligned_edge=LEFT, buff=0.2).shift(0.5*RIGHT)
+        eq_b_accel_dir_i[0].set_color(YELLOW)
+        eq_b_accel_dir_j = MathTex(
+            '\\hat{j}:',
+            '0',
+            '=',
+            '-a\\alpha - 2a\\cos(30^\\circ)|\\vec{\\alpha}_{AB}| + 0.333a\\omega^2',
+        ).scale(0.55).next_to(eq_b_accel_dir_i, DOWN, aligned_edge=LEFT, buff=0.2)
+        eq_b_accel_dir_j[0].set_color(YELLOW)
+
+        alpha_ab_ans = MathTex(
+            '|\\vec{\\alpha}_{AB}| = 0.192\\omega^2-0.577\\alpha',
+            '\\Rightarrow',
+            '\\vec{\\alpha}_{AB} = (0.192\\omega^2-0.577\\alpha)\\hat{k}'
+        ).scale(0.55).next_to(eq_b_accel_dir_j, DOWN, aligned_edge=LEFT).shift(0.5*LEFT)
+        a_b_ans = MathTex(
+            '|\\vec{a}_B| = 1.769a\\omega^2 - 1.577a\\alpha',
+            '\\Rightarrow',
+            '\\vec{a}_B = (1.769a\\omega^2 - 1.577a\\alpha)\\hat{i}'
+        ).scale(0.55).next_to(alpha_ab_ans, DOWN, aligned_edge=LEFT)
+        ansbox2 = SurroundingRectangle(a_b_ans[2])
+
+        self.play(Write(eq_b_accel))
+        self.wait()
+        self.play(Write(eq_b_accel_sub[:3]))
+        self.wait(0.5)
+        self.play(Write(eq_b_accel_sub[3:5]))
+        self.wait(0.5)
+        self.play(
+            Write(eq_b_accel_dir_i),
+            Write(eq_b_accel_dir_j)
+        )
+        self.wait(0.5)
+        self.play(
+            Write(a_b_ans[0]),
+            Write(alpha_ab_ans[0])
+        )
+        self.wait(0.5)
+        self.play(
+            Write(a_b_ans[1:]),
+            Write(alpha_ab_ans[1:])
+        )
+        self.play(ShowCreation(ansbox2))
         self.wait()
         #endregion
 
