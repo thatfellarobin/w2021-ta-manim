@@ -261,7 +261,7 @@ class T8P3(Scene):
             max_stroke_width_to_length_ratio=999,
             max_tip_length_to_length_ratio=1
         )
-        v_B_label = MathTex('\\vec{v}_B', color=PURPLE).scale(0.6).next_to(v_B_arrow.get_end(), UP, buff=0.15)
+        v_B_label = MathTex('\\vec{v}_B', color=PURPLE).scale(0.6).next_to(v_B_arrow.get_end(), UP, buff=0.12).shift(0.05*LEFT)
         omega_main_arrow = Arc(
             radius=0.5,
             start_angle=PI,
@@ -350,5 +350,45 @@ class T8P3(Scene):
         self.wait()
         #endregion
 
+        #region Solving for omega_ABC and omega_F
+        v_C_ans = MathTex('\\vec{v}_C = 0').scale(0.55).next_to(v_B_ans[-1], DOWN, aligned_edge=LEFT)
+        self.play(Write(v_C_ans))
+        self.wait()
+        omega_ABC_ans = MathTex('\\vec{\\omega}_{ABC} = 0').scale(0.55).next_to(v_C_ans, RIGHT, aligned_edge=DOWN, buff=0.75)
+        ansbox1 = SurroundingRectangle(omega_ABC_ans)
+        self.play(Write(omega_ABC_ans))
+        self.play(ShowCreation(ansbox1))
+        self.wait()
+
+        # Gearing relation
+        eq_gear = MathTex(
+            '\\vec{\\omega}_Gr_G = -\\vec{\\omega}_Fr_F'
+        ).scale(0.55).next_to(v_C_ans, DOWN, aligned_edge=LEFT)
+        eq_gear_subbed = MathTex(
+            '\\vec{\\omega}_F = -\\frac{\\vec{\\omega}_Gr_G}{r_F} = -\\frac{(5.33\\hat{k})(0.1)}{0.05}',
+            '\\Rightarrow',
+            '\\vec{\\omega}_F = -10.7\\hat{k}\\,\\mathrm{rad/s}'
+        ).scale(0.55).next_to(eq_gear, DOWN, aligned_edge=LEFT)
+        eq_gear_subbed[1:].next_to(eq_gear_subbed[0], DOWN, aligned_edge=LEFT).shift(0.5*RIGHT)
+        ansbox2 = SurroundingRectangle(eq_gear_subbed[-1])
+        ansgroup2 = Group(eq_gear_subbed[-1], ansbox2)
+        self.play(Write(eq_gear))
+        self.wait()
+        self.play(Write(eq_gear_subbed[0]))
+        self.wait()
+        self.play(Write(eq_gear_subbed[1:]))
+        self.play(ShowCreation(ansbox2))
+        self.wait()
+        self.play(
+            FadeOut(eq_gear),
+            FadeOut(eq_gear_subbed[:-1]),
+            Transform(ansgroup2, ansgroup2.copy().next_to(v_C_ans, DOWN, aligned_edge=LEFT).shift(0.05*DOWN))
+        )
+        self.wait()
+
+
         #endregion
+        #endregion
+
+        #region Acceleration Analysis
 
