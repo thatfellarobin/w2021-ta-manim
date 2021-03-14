@@ -317,7 +317,7 @@ class T8P3(Scene):
             '\\vec{\\omega}_{G} = 5.33\\hat{k}'
         ).scale(0.55).next_to(v_B_ans, DOWN, aligned_edge=LEFT)
 
-        v_B_ans_newpos = v_B_ans.copy().next_to(eq_v_D_sub[-1], DOWN, aligned_edge=LEFT)
+        v_B_ans_newpos = v_B_ans.copy().next_to(eq_v_D_sub[-1], DOWN, buff=0.15, aligned_edge=LEFT)
         omega_G_ans_newpos = omega_G_ans[-1].copy().next_to(v_B_ans_newpos, RIGHT, buff=0.75, aligned_edge=DOWN)
 
         self.play(Write(eq_v_B))
@@ -367,7 +367,7 @@ class T8P3(Scene):
         eq_gear_subbed = MathTex(
             '\\vec{\\omega}_F = -\\frac{\\vec{\\omega}_Gr_G}{r_F} = -\\frac{(5.33\\hat{k})(0.1)}{0.05}',
             '\\Rightarrow',
-            '\\vec{\\omega}_F = -10.7\\hat{k}\\,\\mathrm{rad/s}'
+            '\\vec{\\omega}_F = -10.7\\hat{k}'
         ).scale(0.55).next_to(eq_gear, DOWN, aligned_edge=LEFT)
         eq_gear_subbed[1:].next_to(eq_gear_subbed[0], DOWN, aligned_edge=LEFT).shift(0.5*RIGHT)
         ansbox2 = SurroundingRectangle(eq_gear_subbed[-1])
@@ -382,13 +382,142 @@ class T8P3(Scene):
         self.play(
             FadeOut(eq_gear),
             FadeOut(eq_gear_subbed[:-1]),
-            Transform(ansgroup2, ansgroup2.copy().next_to(v_C_ans, DOWN, aligned_edge=LEFT).shift(0.05*DOWN))
+            Transform(ansgroup2, ansgroup2.copy().next_to(v_C_ans, DOWN, buff=0.15, aligned_edge=LEFT).shift(0.05*DOWN))
         )
         self.wait()
-
-
         #endregion
         #endregion
 
         #region Acceleration Analysis
+        # Acceleration of D
+        eq_a_D = MathTex(
+            '\\vec{a}_D = \\vec{a}_E + \\vec{\\alpha}_{DE}\\times\\vec{r}_{D/E} - |\\vec{\\omega}_{DE}|^2\\vec{r}_{D/E}'
+        ).scale(0.55).next_to(ansgroup2, DOWN, aligned_edge=LEFT)
+        eq_a_D_sub = MathTex(
+            '\\vec{a}_D',
+            '=',
+            '0 + (-20\\hat{k}\\times (-0.1\\hat{i})) - 4^2 (-0.1\\hat{i})',
+            '\\Rightarrow',
+            '\\vec{a}_D = 1.6\\hat{i} + 2\\hat{j}',
+        ).scale(0.55).next_to(eq_a_D, DOWN, buff=0.2, aligned_edge=LEFT)
+        eq_a_D_sub[3:].next_to(eq_a_D_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
 
+        self.play(Write(eq_a_D))
+        self.wait()
+        self.play(Write(eq_a_D_sub[:3]))
+        self.wait(0.5)
+        self.play(Write(eq_a_D_sub[3:]))
+        self.wait()
+        self.play(
+            FadeOut(eq_a_D),
+            FadeOut(eq_a_D_sub[:-1]),
+            Transform(eq_a_D_sub[-1], eq_a_D_sub[-1].copy().next_to(ansgroup2, DOWN, buff=0.15, aligned_edge=LEFT))
+        )
+        self.wait()
+
+        # Acceleration of B relative to A
+        # Label assumptions
+        alpha_ABC_arrow = Arc(
+            radius=0.5,
+            start_angle=0,
+            angle=PI,
+            color=PURPLE
+        ).add_tip(tip_length=0.15)
+        alpha_ABC_arrow.move_arc_center_to(point_A.get_center())
+        alpha_ABC_annot = MathTex('\\alpha_{ABC}', color=PURPLE).scale(0.6).next_to(alpha_ABC_arrow.get_end(), DOWN, buff=0.15)
+        self.play(
+            Write(alpha_ABC_arrow),
+            Write(alpha_ABC_annot)
+        )
+        self.wait()
+
+        # Solve
+        eq_a_BA = MathTex(
+            '\\vec{a}_B = \\vec{a}_A + \\vec{\\alpha}_{ABC}\\times\\vec{r}_{B/A} - |\\vec{\\omega}_{ABC}|^2\\vec{r}_{B/A}'
+        ).scale(0.55).next_to(eq_a_D_sub[-1], DOWN, aligned_edge=LEFT)
+        eq_a_BA_sub = MathTex(
+            '\\vec{a}_B',
+            '=',
+            '0 + (|\\vec{\\alpha}_{ABC}|\\hat{k} \\times [-0.15\\sin(30^\\circ)\\hat{i} + 0.15\\cos(30^\\circ)\\hat{j}]) - 0',
+            '\\Rightarrow',
+            '\\vec{a}_B = -0.130|\\vec{\\alpha}_{ABC}|\\hat{i} - 0.075|\\vec{\\alpha}_{ABC}|\\hat{j}',
+        ).scale(0.55).next_to(eq_a_BA, DOWN, buff=0.2, aligned_edge=LEFT)
+        eq_a_BA_sub[3:].next_to(eq_a_BA_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        self.play(Write(eq_a_BA))
+        self.wait()
+        self.play(Write(eq_a_BA_sub[:3]))
+        self.wait(0.5)
+        self.play(Write(eq_a_BA_sub[3:]))
+        self.wait()
+        self.play(
+            FadeOut(eq_a_BA),
+            FadeOut(eq_a_BA_sub[:-1]),
+            Transform(eq_a_BA_sub[-1], eq_a_BA_sub[-1].copy().next_to(eq_a_D_sub[-1], DOWN, buff=0.15, aligned_edge=LEFT))
+        )
+        self.wait()
+
+        # Acceleration of B relative to D
+        # Label assumptions
+        alpha_main_annot = MathTex('\\alpha_{G}', color=PURPLE).scale(0.6).next_to(omega_main_annot, UP, buff=0.1)
+        self.play(Write(alpha_main_annot))
+        self.wait()
+        # Solve
+        eq_a_BD = MathTex(
+            '\\vec{a}_B = \\vec{a}_D + \\vec{\\alpha}_{G}\\times\\vec{r}_{B/D} - |\\vec{\\omega}_{G}|^2\\vec{r}_{B/D}'
+        ).scale(0.55).next_to(eq_a_BA_sub[-1], DOWN, aligned_edge=LEFT)
+        eq_a_BD_sub = MathTex(
+            '-0.130|\\vec{\\alpha}_{ABC}|\\hat{i} - 0.075|\\vec{\\alpha}_{ABC}|\\hat{j}',
+            '=',
+            '(1.6\\hat{i} + 2\\hat{j}) + (|\\vec{\\alpha}_{G}|\\hat{k} \\times -0.075\\hat{i}) - 5.33^2(-0.075\\hat{i})',
+            '='
+            '3.73\\hat{i} + (2-0.075|\\vec{\\alpha}_{G}|)\\hat{j}'
+        ).scale(0.55).next_to(eq_a_BD, DOWN, buff=0.2, aligned_edge=LEFT)
+        eq_a_BD_sub[1:].next_to(eq_a_BD_sub[0], DOWN, aligned_edge=LEFT, buff=0.15).shift(0.5*RIGHT)
+        eq_a_BD_sub[3:].next_to(eq_a_BD_sub[1:3], DOWN, aligned_edge=LEFT, buff=0.15)
+        self.play(Write(eq_a_BD))
+        self.wait()
+        self.play(Write(eq_a_BD_sub[0]))
+        self.wait(0.5)
+        self.play(Write(eq_a_BD_sub[1:3]))
+        self.wait(0.5)
+        self.play(Write(eq_a_BD_sub[3:]))
+        self.wait()
+        eq_a_BD_sub_dir_i = MathTex(
+            '\\hat{i}:',
+            '-0.130|\\vec{\\alpha}_{ABC}|',
+            '=',
+            '3.73'
+        ).scale(0.55).next_to(eq_a_BD_sub, DOWN, aligned_edge=LEFT, buff=0.15).shift(0.5*RIGHT)
+        eq_a_BD_sub_dir_i[0].set_color(YELLOW)
+        eq_a_BD_sub_dir_j = MathTex(
+            '\\hat{j}:',
+            '-0.075|\\vec{\\alpha}_{ABC}|',
+            '=',
+            '2-0.075|\\vec{\\alpha}_{G}|',
+        ).scale(0.55).next_to(eq_a_BD_sub_dir_i, DOWN, aligned_edge=LEFT, buff=0.15)
+        eq_a_BD_sub_dir_j[0].set_color(YELLOW)
+
+        alpha_AB_ans = MathTex(
+            '|\\vec{\\alpha}_{ABC}| = -28.7',
+            '\\Rightarrow',
+            '\\vec{\\alpha}_{ABC} = -28.7\\hat{k}'
+        ).scale(0.55).next_to(eq_a_BD_sub_dir_j, DOWN, aligned_edge=LEFT)
+        ansbox3 = SurroundingRectangle(alpha_AB_ans[-1])
+        alpha_G_ans = MathTex(
+            '|\\vec{\\alpha}_{G}| = -2.03',
+            '\\Rightarrow',
+            '\\vec{\\alpha}_{G} = -2.03\\hat{k}'
+        ).scale(0.55).next_to(alpha_AB_ans, DOWN, aligned_edge=LEFT)
+        self.play(
+            Write(eq_a_BD_sub_dir_i),
+            Write(eq_a_BD_sub_dir_j)
+        )
+        self.wait()
+        self.play(
+            Write(alpha_AB_ans),
+            Write(alpha_G_ans)
+        )
+        self.play(ShowCreation(ansbox3))
+        self.wait()
+
+        #endregion
