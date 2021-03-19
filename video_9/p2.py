@@ -13,7 +13,27 @@ DSCALE = 1/3
 IMGSCALE = 5/500
 
 
+
+
 class T9P2(Scene):
+    def number_equation(self, eq, n, color=YELLOW_B):
+        num = MathTex('\\textbf{' + str(n) + '}', color=color).scale(0.5)
+        circle = Circle(
+            color=color,
+            radius=0.225,
+            arc_center=num.get_center()
+        )
+        line = Line(
+            start=circle.get_edge_center(LEFT),
+            end=circle.get_edge_center(LEFT)+0.5*LEFT,
+            color=color
+        )
+        group = Group(num, circle, line)
+        group.next_to(eq, RIGHT, buff=0.25)
+        self.play(FadeIn(group))
+        return group
+
+
     def construct(self):
         attribution = Tex('Robin Liu, 2021', color=MED_DARK_GREY).scale(0.4).to_corner(DOWN+RIGHT, buff=0.2)
         self.add(attribution)
@@ -163,6 +183,7 @@ class T9P2(Scene):
         self.wait()
         fbd_x_eq = MathTex('F_f = \\frac{W}{g}a_G').scale(0.65).next_to(fbd_y_eq, DOWN, aligned_edge=LEFT)
         self.play(Write(fbd_x_eq))
+        self.number_equation(fbd_x_eq, 1)
         self.wait()
         fbd_rot_eq = MathTex(
             '\\Sigma M = I\\alpha'
@@ -173,8 +194,33 @@ class T9P2(Scene):
         self.play(Write(fbd_rot_eq))
         self.wait()
         self.play(Write(fbd_rot_eq_subbed))
+        self.number_equation(fbd_rot_eq_subbed, 2)
         self.wait()
-        fric_max_eq = MathTex('F_{fs,max} = \\mu_s F_N = 135\\,\\mathrm{N}').scale(0.65).next_to(Group(fbd_rot_eq, fbd_rot_eq_subbed), DOWN, aligned_edge=LEFT)
+        accel_relate_eq = MathTex(
+            'a_G = a_{At} - \\alpha r'
+        ).scale(0.65).next_to(Group(fbd_rot_eq, fbd_rot_eq_subbed), DOWN, aligned_edge=LEFT)
+        self.play(Write(accel_relate_eq))
+        self.number_equation(accel_relate_eq, 3)
+        self.wait()
+
+        # Answers
+        ans_eqs = MathTex(
+            'F_f = 42.4\\,\\mathrm{N}',
+            'a_G = 0.462\\,,\\mathrm{m/s^2}',
+            '\\alpha = 1.15\\,\\mathrm{rad/s^2}'
+        ).scale(0.65).next_to(accel_relate_eq, DOWN, aligned_edge=LEFT)
+        ans_eqs[1:].next_to(ans_eqs[0], DOWN, aligned_edge=LEFT)
+        ans_eqs[2:].next_to(ans_eqs[1], DOWN, aligned_edge=LEFT)
+        ansbox = SurroundingRectangle(ans_eqs[2], buff=0.15)
+        self.play(
+            *[Write(ans_eqs[i]) for i in range(len(ans_eqs))]
+        )
+        self.play(ShowCreation(ansbox))
+        self.wait()
+
+
+        fric_max_eq = MathTex('F_{fs,max} = \\mu_s F_N = 135\\,\\mathrm{N}').scale(0.65).next_to(ans_eqs, DOWN, aligned_edge=LEFT)
         self.play(Write(fric_max_eq))
         self.wait()
 
+        # TODO: add equation numbers
