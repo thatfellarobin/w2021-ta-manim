@@ -222,5 +222,3 @@ class T9P2(Scene):
         fric_max_eq = MathTex('F_{fs,max} = \\mu_s F_N = 135\\,\\mathrm{N}').scale(0.65).next_to(ans_eqs, DOWN, aligned_edge=LEFT)
         self.play(Write(fric_max_eq))
         self.wait()
-
-        # TODO: add equation numbers
