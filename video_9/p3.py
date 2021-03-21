@@ -327,6 +327,13 @@ class T9P3(Scene):
         #endregion
 
         #region Kinematic relations
+        rolling_1_eq = MathTex(
+            'a_x = -a_C + r_o\\alpha'
+        ).scale(0.6).next_to(fbd_moments_eq, DOWN, aligned_edge=LEFT)
+        self.play(Write(rolling_1_eq))
+        self.number_equation(rolling_1_eq, 3)
+        self.wait()
+
         point_of_rolling = Dot(
             point=wheel_inner.get_edge_center(DOWN),
             color=YELLOW
@@ -336,19 +343,9 @@ class T9P3(Scene):
             self.play(Flash(point_of_rolling))
         self.wait()
 
-        rolling_1_eq = MathTex(
-            'a_x = r_i\\alpha'
-        ).scale(0.6).next_to(fbd_moments_eq, DOWN, aligned_edge=LEFT)
         rolling_2_eq = MathTex(
-            'a_C = (r_o - r_i)\\alpha'
+            '0 = a_x - r_i\\alpha'
         ).scale(0.6).next_to(rolling_1_eq, DOWN, aligned_edge=LEFT)
-        for _ in range(2):
-            self.play(Flash(wheel.get_center()))
-        self.play(Write(rolling_1_eq))
-        self.number_equation(rolling_1_eq, 3)
-        self.wait()
-        for _ in range(2):
-            self.play(Flash(wheel.get_edge_center(DOWN)))
         self.play(Write(rolling_2_eq))
         self.number_equation(rolling_2_eq, 4)
         self.wait()

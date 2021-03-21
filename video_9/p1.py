@@ -101,7 +101,7 @@ class T9P1(Scene):
         self.wait()
 
         fbd_eq = MathTex(
-            '\\Sigma F_y = m\\frac{a}{2} = 2T - m_ag'
+            '\\Sigma F_y = m_a\\frac{a}{2} = 2T - m_ag'
         ).scale(0.6).to_corner(UP+LEFT, buff=0.75)
         fbd_eq_sub = MathTex(
             'T=43.24\\,\\mathrm{kN}'
