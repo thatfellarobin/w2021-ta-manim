@@ -183,9 +183,7 @@ class T11P1(Scene):
             FadeIn(point_D),
             Write(point_D_label),
             FadeIn(point_G),
-            Write(point_G_label)
-        )
-        self.play(
+            Write(point_G_label),
             Write(b_arrow_left),
             Write(b_arrow_label_left),
             Write(b_arrow_right),
@@ -208,7 +206,9 @@ class T11P1(Scene):
             point_D,
             point_D_label,
             point_G,
-            point_G_label,
+            point_G_label
+        )
+        annot_group = Group(
             b_arrow_left,
             b_arrow_label_left,
             b_arrow_right,
@@ -216,7 +216,7 @@ class T11P1(Scene):
             a_arrow_left,
             a_arrow_label_left,
             a_arrow_right,
-            a_arrow_label_right,
+            a_arrow_label_right
         )
         labeled_beam = Group(
             beam,
@@ -234,13 +234,24 @@ class T11P1(Scene):
         #endregion
 
         #region Animate the key points in time
-        self.play(Transform(diagram, diagram.copy().to_edge(UP, buff=1.5)))
+        self.play(
+            Transform(diagram, diagram.copy().shift(1*UP)),
+            Transform(annot_group, annot_group.copy().shift(1*UP)),
+        )
         self.play(
             Rotate(
                 labeled_beam,
                 angle=np.arcsin(DIM_C/(DIM_A+2*DIM_B)),
                 about_point=point_A.get_center()
-            )
+            ),
+            FadeOut(b_arrow_left),
+            FadeOut(b_arrow_label_left),
+            FadeOut(b_arrow_right),
+            FadeOut(b_arrow_label_right),
+            FadeOut(a_arrow_left),
+            FadeOut(a_arrow_label_left),
+            FadeOut(a_arrow_right),
+            FadeOut(a_arrow_label_right),
         )
         self.wait()
         c_arrow = DoubleArrow(
@@ -291,8 +302,8 @@ class T11P1(Scene):
             triang1,
             triang2
         ).copy()
-        time1_group_newpos = time1_group.copy().scale(0.65).to_corner(DOWN+LEFT, buff=0.5)
-        time1_label = MathTex('t_0', color=BLUE).scale(0.8).next_to(time1_group_newpos, DOWN, buff=0.25)
+        time1_group_newpos = time1_group.copy().scale(0.65).to_corner(DOWN+LEFT, buff=0.5).shift(0.25*UP)
+        time1_label = MathTex('t_0', color=BLUE).scale(0.7).next_to(time1_group_newpos, DOWN, buff=0.15)
         self.play(
             Transform(time1_group, time1_group_newpos),
             Write(time1_label)
@@ -313,8 +324,8 @@ class T11P1(Scene):
         )
         self.wait()
         time2_group = diagram.copy()
-        time2_group_newpos = time2_group.copy().scale(0.65).to_edge(DOWN, buff=0.5)
-        time2_label = MathTex('t_1', color=BLUE).scale(0.8).next_to(time2_group_newpos, DOWN, buff=0.25)
+        time2_group_newpos = time2_group.copy().scale(0.65).to_edge(DOWN, buff=0.5).shift(0.25*UP)
+        time2_label = MathTex('t_1', color=BLUE).scale(0.7).next_to(time2_group_newpos, DOWN, buff=0.15)
         self.play(
             Transform(time2_group, time2_group_newpos),
             Write(time2_label)
@@ -330,7 +341,7 @@ class T11P1(Scene):
         )
         self.wait()
         theta_arrow1 = Arc(
-            start_angle=PI-0.063-(PI/12),
+            start_angle=PI-0.063-(PI/13),
             angle=PI/15,
             radius=3,
             color=YELLOW,
@@ -338,7 +349,7 @@ class T11P1(Scene):
         ).add_tip(tip_length=0.15)
         theta_arrow1.move_arc_center_to(point_B.get_center())
         theta_arrow2 = Arc(
-            start_angle=PI+(PI/12),
+            start_angle=PI+(PI/13),
             angle=-PI/15,
             radius=3,
             color=YELLOW,
@@ -347,8 +358,18 @@ class T11P1(Scene):
         theta_arrow2.move_arc_center_to(point_B.get_center())
         theta_arrow = Group(theta_arrow1, theta_arrow2)
         theta_arrow_label = MathTex('\\theta', color=YELLOW).scale(0.6).next_to(theta_arrow1.get_start(), UP, buff=0.1)
-        h_arrow = DoubleArrow(
-            start=point_C.get_center(),
+        h_arrow1 = Arrow(
+            start=point_C.get_center()+0.5*UP,
+            end=point_C.get_center(),
+            color=YELLOW,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.15,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        h_arrow2 = Arrow(
+            start=point_C.get_center()+DSCALE*0.12*DOWN+0.5*DOWN,
             end=point_C.get_center()+DSCALE*0.12*DOWN,
             color=YELLOW,
             buff=0.0,
@@ -356,11 +377,12 @@ class T11P1(Scene):
             tip_length=0.15,
             max_stroke_width_to_length_ratio=999,
             max_tip_length_to_length_ratio=1
-        ).shift(0.6*LEFT)
-        h_arrow_label = MathTex('h', color=YELLOW).scale(0.6).next_to(h_arrow, LEFT, buff=0.1)
+        )
+        h_arrow = Group(h_arrow1, h_arrow2)
+        h_arrow_label = MathTex('h', color=YELLOW).scale(0.6).next_to(h_arrow1.get_start(), UP, buff=0.1)
         theta_refline = Line(
             start = point_B.get_center(),
-            end=h_arrow.get_end(),
+            end=h_arrow2.get_end(),
             buff=0.25,
             color=GREY
         )
@@ -368,7 +390,8 @@ class T11P1(Scene):
             Write(theta_arrow1),
             Write(theta_arrow2),
             Write(theta_arrow_label),
-            Write(h_arrow),
+            Write(h_arrow1),
+            Write(h_arrow2),
             Write(h_arrow_label),
             Create(theta_refline)
         )
@@ -381,8 +404,8 @@ class T11P1(Scene):
             h_arrow_label,
             theta_refline
         ).copy()
-        time3_group_newpos = time3_group.copy().scale(0.65).to_corner(DOWN+RIGHT, buff=0.5)
-        time3_label = MathTex('t_2', color=BLUE).scale(0.8).next_to(time3_group_newpos, DOWN, buff=0.25)
+        time3_group_newpos = time3_group.copy().scale(0.65).to_corner(DOWN+RIGHT, buff=0.5).shift(0.25*UP)
+        time3_label = MathTex('t_2', color=BLUE).scale(0.7).next_to(time3_group_newpos, DOWN, buff=0.15)
         self.play(
             Transform(time3_group, time3_group_newpos),
             Write(time3_label)
@@ -390,12 +413,12 @@ class T11P1(Scene):
         self.wait()
 
         self.play(
+            FadeOut(diagram),
             FadeOut(theta_arrow),
             FadeOut(theta_arrow_label),
             FadeOut(h_arrow),
             FadeOut(h_arrow_label),
-            FadeOut(theta_refline),
-            FadeOut(diagram)
+            FadeOut(theta_refline)
         )
         self.wait()
         #endregion
@@ -484,7 +507,7 @@ class T11P1(Scene):
         self.wait()
 
         # Time 1 to 2
-        time_12 = Tex('$t_1$ to $t_2$:', color=BLUE).scale(0.5).next_to(mom_1_sub, DOWN, buff=0.5, aligned_edge=LEFT)
+        time_12 = Tex('$t_1$ to $t_2$:', color=BLUE).scale(0.5).next_to(mom_1_sub, DOWN, buff=0.25, aligned_edge=LEFT)
         self.play(Write(time_12))
         self.wait()
         energy_12 = MathTex(
@@ -504,12 +527,8 @@ class T11P1(Scene):
         # Find height h
         h = MathTex(
             'h = (a+2b)\\sin(\\theta) = 0.12\\,\\mathrm{m}'
-        ).scale(0.5).next_to(energy_12, DOWN, aligned_edge=LEFT).shift(0.15*RIGHT)
+        ).scale(0.5).next_to(energy_12, RIGHT, buff=1).shift(0.15*RIGHT)
         ansbox = SurroundingRectangle(h, buff=0.15)
         self.play(Write(h))
         self.play(Create(ansbox))
         self.wait()
-
-        # FIXME: Time labels are clipping off edge
-        # FIXME: h annotation looks like garbage. separate into two arrows for outer dimension?
-        # FIXME: equation spacing needs tweaking
