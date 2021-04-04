@@ -10,6 +10,9 @@ MED_DARK_GREY = '#666666'
 BLUE_E_DARK = '#0c343d'
 
 DSCALE = 2
+DIM_A = 0.9
+DIM_B = 0.5
+DIM_C = 0.6
 
 class T11P1(Scene):
     def number_equation(self, eq, n, color=YELLOW_B):
@@ -71,12 +74,12 @@ class T11P1(Scene):
             color=GREY
         )
 
-        A_frame_left = create_A_frame().shift(DSCALE*0.5*LEFT).align_to(ground, DOWN)
-        A_frame_right = create_A_frame().shift(DSCALE*0.5*RIGHT).align_to(ground, DOWN)
+        A_frame_left = create_A_frame().shift(DSCALE*DIM_B*LEFT).align_to(ground, DOWN)
+        A_frame_right = create_A_frame().shift(DSCALE*DIM_B*RIGHT).align_to(ground, DOWN)
 
         beam = Rectangle(
             height=0.125,
-            width=DSCALE*2*(0.9+0.5),
+            width=DSCALE*2*(DIM_A+DIM_B),
             color=BLUE_E,
             fill_color=BLUE_E_DARK,
             fill_opacity=1
@@ -215,8 +218,146 @@ class T11P1(Scene):
             a_arrow_right,
             a_arrow_label_right,
         )
+        labeled_beam = Group(
+            beam,
+            point_A,
+            point_A_label,
+            point_B,
+            point_B_label,
+            point_C,
+            point_C_label,
+            point_D,
+            point_D_label,
+            point_G,
+            point_G_label
+        )
         #endregion
 
         #region Animate the key points in time
+        self.play(Transform(diagram, diagram.copy().to_edge(UP, buff=1.5)))
+        self.play(
+            Rotate(
+                labeled_beam,
+                angle=np.arcsin(DIM_C/(DIM_A+2*DIM_B)),
+                about_point=point_A.get_center()
+            )
+        )
+        self.wait()
+        c_arrow = DoubleArrow(
+            start=point_D.get_center(),
+            end=point_D.get_center()+DSCALE*DIM_C*DOWN,
+            color=YELLOW,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.15,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(0.6*RIGHT)
+        c_arrow_label = MathTex('c', color=YELLOW).scale(0.6).next_to(c_arrow, RIGHT, buff=0.1)
+        c_refline = Line(
+            start=point_A.get_center(),
+            end=c_arrow.get_end(),
+            buff=0.25,
+            color=GREY
+        )
+        self.play(
+            Write(c_arrow),
+            Write(c_arrow_label),
+            Create(c_refline)
+        )
+        self.wait()
+        time1_group = Group(
+            diagram,
+            c_arrow,
+            c_arrow_label,
+            c_refline
+        ).copy()
+        time1_group_newpos = time1_group.copy().scale(0.65).to_corner(DOWN+LEFT, buff=0.5).shift(0.5*UP)
+        time1_label = MathTex('t_0', color=BLUE).scale(0.8).next_to(time1_group_newpos, DOWN, buff=0.25)
+        self.play(
+            Transform(time1_group, time1_group_newpos),
+            Write(time1_label)
+        )
+        self.wait()
 
+        self.play(
+            FadeOut(c_arrow),
+            FadeOut(c_arrow_label),
+            FadeOut(c_refline),
+            Rotate(
+                labeled_beam,
+                angle=-np.arcsin(DIM_C/(DIM_A+2*DIM_B)),
+                about_point=point_A.get_center()
+            )
+        )
+        self.wait()
+        time2_group = diagram.copy()
+        time2_group_newpos = time2_group.copy().scale(0.65).to_edge(DOWN, buff=0.5).shift(0.5*UP)
+        time2_label = MathTex('t_1', color=BLUE).scale(0.8).next_to(time2_group_newpos, DOWN, buff=0.25)
+        self.play(
+            Transform(time2_group, time2_group_newpos),
+            Write(time2_label)
+        )
+        self.wait()
+
+        self.play(
+            Rotate(
+                labeled_beam,
+                angle=-0.063,
+                about_point=point_B.get_center()
+            )
+        )
+        self.wait()
+        theta_arrow1 = Arc(
+            start_angle=PI-0.063-(PI/12),
+            angle=PI/15,
+            radius=3,
+            color=YELLOW,
+            buff=0
+        ).add_tip(tip_length=0.15)
+        theta_arrow1.move_arc_center_to(point_B.get_center())
+        theta_arrow2 = Arc(
+            start_angle=PI+(PI/12),
+            angle=-PI/15,
+            radius=3,
+            color=YELLOW,
+            buff=0
+        ).add_tip(tip_length=0.15)
+        theta_arrow2.move_arc_center_to(point_B.get_center())
+        theta_arrow = Group(theta_arrow1, theta_arrow2)
+        theta_arrow_label = MathTex('\\theta', color=YELLOW).scale(0.6).next_to(theta_arrow1.get_start(), UP, buff=0.1)
+        theta_refline = Line(
+            start = point_B.get_center(),
+            end=point_B.get_center() + DSCALE*3*DIM_B*LEFT,
+            buff=0.25,
+            color=GREY
+        )
+        self.play(
+            Write(theta_arrow1),
+            Write(theta_arrow2),
+            Write(theta_arrow_label),
+            Create(theta_refline)
+        )
+        self.wait()
+        time3_group = Group(
+            diagram,
+            theta_arrow,
+            theta_arrow_label,
+            theta_refline
+        ).copy()
+        time3_group_newpos = time3_group.copy().scale(0.65).to_corner(DOWN+RIGHT, buff=0.5).shift(0.5*UP)
+        time3_label = MathTex('t_2', color=BLUE).scale(0.8).next_to(time3_group_newpos, DOWN, buff=0.25)
+        self.play(
+            Transform(time3_group, time3_group_newpos),
+            Write(time3_label)
+        )
+        self.wait()
+
+        self.play(
+            FadeOut(diagram),
+            FadeOut(theta_arrow),
+            FadeOut(theta_arrow_label),
+            FadeOut(theta_refline)
+        )
+        self.wait()
         #endregion
