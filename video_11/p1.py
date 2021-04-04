@@ -260,19 +260,38 @@ class T11P1(Scene):
             buff=0.25,
             color=GREY
         )
+        triang1 = Polygon(
+            *[point_D.get_center(), point_A.get_center(), np.array([point_D.get_center()[0], point_A.get_center()[1], 0])],
+            color=GREEN,
+            fill_opacity=0,
+            stroke_width=5,
+            stroke_opacity=0.7
+        )
+        triang2 = Polygon(
+            *[point_G.get_center(), point_A.get_center(), np.array([point_G.get_center()[0], point_A.get_center()[1], 0])],
+            color=RED,
+            fill_opacity=0,
+            stroke_width=3,
+            stroke_opacity=0.7
+        )
         self.play(
             Write(c_arrow),
             Write(c_arrow_label),
             Create(c_refline)
         )
         self.wait()
+        self.play(Create(triang1))
+        self.play(Create(triang2))
+        self.wait()
         time1_group = Group(
             diagram,
             c_arrow,
             c_arrow_label,
-            c_refline
+            c_refline,
+            triang1,
+            triang2
         ).copy()
-        time1_group_newpos = time1_group.copy().scale(0.65).to_corner(DOWN+LEFT, buff=0.5).shift(0.5*UP)
+        time1_group_newpos = time1_group.copy().scale(0.65).to_corner(DOWN+LEFT, buff=0.5)
         time1_label = MathTex('t_0', color=BLUE).scale(0.8).next_to(time1_group_newpos, DOWN, buff=0.25)
         self.play(
             Transform(time1_group, time1_group_newpos),
@@ -284,6 +303,8 @@ class T11P1(Scene):
             FadeOut(c_arrow),
             FadeOut(c_arrow_label),
             FadeOut(c_refline),
+            FadeOut(triang1),
+            FadeOut(triang2),
             Rotate(
                 labeled_beam,
                 angle=-np.arcsin(DIM_C/(DIM_A+2*DIM_B)),
@@ -292,7 +313,7 @@ class T11P1(Scene):
         )
         self.wait()
         time2_group = diagram.copy()
-        time2_group_newpos = time2_group.copy().scale(0.65).to_edge(DOWN, buff=0.5).shift(0.5*UP)
+        time2_group_newpos = time2_group.copy().scale(0.65).to_edge(DOWN, buff=0.5)
         time2_label = MathTex('t_1', color=BLUE).scale(0.8).next_to(time2_group_newpos, DOWN, buff=0.25)
         self.play(
             Transform(time2_group, time2_group_newpos),
@@ -326,9 +347,20 @@ class T11P1(Scene):
         theta_arrow2.move_arc_center_to(point_B.get_center())
         theta_arrow = Group(theta_arrow1, theta_arrow2)
         theta_arrow_label = MathTex('\\theta', color=YELLOW).scale(0.6).next_to(theta_arrow1.get_start(), UP, buff=0.1)
+        h_arrow = DoubleArrow(
+            start=point_C.get_center(),
+            end=point_C.get_center()+DSCALE*0.12*DOWN,
+            color=YELLOW,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.15,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        ).shift(0.6*LEFT)
+        h_arrow_label = MathTex('h', color=YELLOW).scale(0.6).next_to(h_arrow, LEFT, buff=0.1)
         theta_refline = Line(
             start = point_B.get_center(),
-            end=point_B.get_center() + DSCALE*3*DIM_B*LEFT,
+            end=h_arrow.get_end(),
             buff=0.25,
             color=GREY
         )
@@ -336,6 +368,8 @@ class T11P1(Scene):
             Write(theta_arrow1),
             Write(theta_arrow2),
             Write(theta_arrow_label),
+            Write(h_arrow),
+            Write(h_arrow_label),
             Create(theta_refline)
         )
         self.wait()
@@ -343,9 +377,11 @@ class T11P1(Scene):
             diagram,
             theta_arrow,
             theta_arrow_label,
+            h_arrow,
+            h_arrow_label,
             theta_refline
         ).copy()
-        time3_group_newpos = time3_group.copy().scale(0.65).to_corner(DOWN+RIGHT, buff=0.5).shift(0.5*UP)
+        time3_group_newpos = time3_group.copy().scale(0.65).to_corner(DOWN+RIGHT, buff=0.5)
         time3_label = MathTex('t_2', color=BLUE).scale(0.8).next_to(time3_group_newpos, DOWN, buff=0.25)
         self.play(
             Transform(time3_group, time3_group_newpos),
@@ -354,10 +390,126 @@ class T11P1(Scene):
         self.wait()
 
         self.play(
-            FadeOut(diagram),
             FadeOut(theta_arrow),
             FadeOut(theta_arrow_label),
-            FadeOut(theta_refline)
+            FadeOut(h_arrow),
+            FadeOut(h_arrow_label),
+            FadeOut(theta_refline),
+            FadeOut(diagram)
         )
         self.wait()
         #endregion
+
+        #region Moments of inertia
+        I_g = MathTex(
+            'I_G = \\frac{1}{12}mL^2',
+            '= \\frac{1}{12}\\frac{W}{g}(2a+2b)^2 = 8.994\\,\\mathrm{kgm^2}'
+        ).scale(0.5).to_corner(UP+LEFT, buff=0.5)
+        self.play(Write(I_g[0]))
+        self.wait(0.5)
+        self.play(Write(I_g[1]))
+        self.wait()
+        I_b = MathTex(
+            'I_B = I_G + md^2',
+            '= I_G + \\frac{W}{g}b^2 = 12.435\\,\\mathrm{kgm^2} = I_A'
+        ).scale(0.5).next_to(I_g, RIGHT, buff=1)
+        self.play(Write(I_b[0]))
+        self.wait(0.5)
+        self.play(Write(I_b[1]))
+        self.wait()
+        #endregion
+
+        # Time 0 to 1
+        energy = MathTex(
+            '\\Delta \\mathbb{W}',
+            '=',
+            '\\Delta E_{grav}',
+            '+',
+            '\\Delta E_{kin}'
+        ).scale(0.5).next_to(I_g, DOWN, aligned_edge=LEFT)
+        self.play(Write(energy))
+        self.wait()
+        time_01 = Tex('$t_0$ to $t_1$:', color=BLUE).scale(0.5).next_to(energy, DOWN, buff=0.5, aligned_edge=LEFT)
+        self.play(Write(time_01))
+        self.wait()
+        energy_01 = MathTex(
+            '0',
+            '=',
+            '-W\\left(\\frac{b}{2b+a}\\right)c',
+            '+',
+            '\\frac{1}{2}I_A\\omega_1^2',
+            '\\Rightarrow',
+            '\\omega_1 = 1.852\\,\\mathrm{rad/s}'
+        ).scale(0.5).next_to(time_01, RIGHT)
+        self.play(Write(energy_01[:-2]))
+        self.wait()
+        self.play(Write(energy_01[-2:]))
+        self.wait()
+
+        # Time 1- to 1+
+        time_1 = Tex(
+            '$t_{1i}$ just before collision, $t_{1f}$ just after collision', color=BLUE
+        ).scale(0.5).next_to(Group(time_01, energy_01), DOWN, aligned_edge=LEFT)
+        self.play(Write(time_1))
+        self.wait()
+        mom_1 = MathTex(
+            'H_{Bi} = H_{Bf}',
+            '-I_G\\omega_1',
+            '+',
+            'mv_Gb',
+            '=',
+            '-I_B\\omega_2'
+        ).scale(0.5).next_to(time_1, DOWN, aligned_edge=LEFT)
+        mom_1[1:].next_to(mom_1[0], DOWN, aligned_edge=LEFT)
+        self.play(Write(mom_1[0]))
+        self.wait()
+        self.play(Write(mom_1[1]))
+        self.wait(0.5)
+        self.play(Write(mom_1[2:4]))
+        self.wait(0.5)
+        self.play(Write(mom_1[4:]))
+        self.wait()
+        mom_1_sub = MathTex(
+            '-I_G\\omega_1',
+            '+',
+            '\\frac{W}{g}(\\omega_1b)b',
+            '=',
+            '-I_B\\omega_2',
+            '\\Rightarrow',
+            '\\omega_2 = 0.827\\,\\mathrm{rad/s}'
+        ).scale(0.5).move_to(mom_1[1:].get_center()).align_to(mom_1[1:], LEFT)
+        self.play(*[ReplacementTransform(mom_1[i+1], mom_1_sub[i]) for i in range(5)])
+        self.wait()
+        self.play(Write(mom_1_sub[-2:]))
+        self.wait()
+
+        # Time 1 to 2
+        time_12 = Tex('$t_1$ to $t_2$:', color=BLUE).scale(0.5).next_to(mom_1_sub, DOWN, buff=0.5, aligned_edge=LEFT)
+        self.play(Write(time_12))
+        self.wait()
+        energy_12 = MathTex(
+            '0',
+            '=',
+            'Wb\\sin(\\theta)',
+            '-',
+            '\\frac{1}{2}I_B\\omega_2^2',
+            '\\Rightarrow',
+            '\\theta = 0.063\\,\\mathrm{rad}'
+        ).scale(0.5).next_to(time_12, RIGHT)
+        self.play(Write(energy_12[:-2]))
+        self.wait()
+        self.play(Write(energy_12[-2:]))
+        self.wait()
+
+        # Find height h
+        h = MathTex(
+            'h = (a+2b)\\sin(\\theta) = 0.12\\,\\mathrm{m}'
+        ).scale(0.5).next_to(energy_12, DOWN, aligned_edge=LEFT).shift(0.15*RIGHT)
+        ansbox = SurroundingRectangle(h, buff=0.15)
+        self.play(Write(h))
+        self.play(Create(ansbox))
+        self.wait()
+
+        # FIXME: Time labels are clipping off edge
+        # FIXME: h annotation looks like garbage. separate into two arrows for outer dimension?
+        # FIXME: equation spacing needs tweaking
