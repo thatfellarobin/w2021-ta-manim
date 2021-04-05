@@ -289,3 +289,21 @@ class T11P2(Scene):
         self.wait()
 
         # Apply restitution
+        restitution_title = Tex('Collision restitution:', color=BLUE).scale(0.5).next_to(momentum, DOWN, aligned_edge=LEFT)
+        self.play(Write(restitution_title))
+        self.wait()
+        restitution = MathTex(
+            'ev_1\\cos(\\theta) = v_2\\cos((\\pi/2)-\\theta)'
+        ).scale(0.5).next_to(restitution_title, DOWN, aligned_edge=LEFT)
+        self.play(Write(restitution))
+        self.number_equation(restitution, 3)
+        self.wait()
+
+        # Answer
+        ans = MathTex(
+            '\\theta = \\tan^{-1}\\sqrt{\\frac{7e}{5}}'
+        ).scale(0.5).next_to(restitution, DOWN, buff=0.5, aligned_edge=LEFT).shift(0.15*RIGHT)
+        ansbox = SurroundingRectangle(ans, buff=0.15)
+        self.play(Write(ans))
+        self.play(Create(ansbox))
+        self.wait()
