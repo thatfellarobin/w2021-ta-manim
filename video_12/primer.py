@@ -44,7 +44,6 @@ class VibPrimer(Scene):
         self.add(attribution)
 
         # Step one: use Newton's second law to get the equation of motion
-
         step1_tex = Tex(
             '\\textbf{Step 1:}',
             ' Use Newton\'s second law to get the equation of motion',
@@ -56,9 +55,31 @@ class VibPrimer(Scene):
             '\\Sigma F = m\\ddot{x}',
             '\\Sigma M = I\\ddot{\\theta}'
         ).scale(0.5).next_to(step1_tex, DOWN, aligned_edge=LEFT)
+        newton_law[1].next_to(newton_law[0], RIGHT, buff=1)
+        self.play(Write(newton_law[0]))
+        self.wait()
+        self.play(Write(newton_law[1]))
+        self.wait()
 
         # Step two: Rearrange it so that all the terms are on one side and the acceleration term has a coefficient of 1
+        step2_tex = Tex(
+            '\\textbf{Step 2:}',
+            ' Rearrange terms to one side and divide by acceleration coefficient',
+            color=YELLOW
+        ).scale(0.6).next_to(newton_law, DOWN, aligned_edge=LEFT)
+        self.play(Write(step2_tex))
+        self.wait()
         eq_motion = MathTex(
             '\\ddot{x} + 2\\zeta \\omega_n\\dot{x} + \\omega_n^2 x = 0',
             '\\ddot{\\theta} + 2\\zeta \\omega_n\\dot{\\theta} + \\omega_n^2 \\theta = 0'
-        ).scale(0.6)
+        ).scale(0.5).next_to(step2_tex, DOWN, aligned_edge=LEFT)
+        eq_motion[1].next_to(eq_motion[0], RIGHT, buff=1)
+        self.play(Write(eq_motion[0]))
+        self.wait()
+        self.play(Write(eq_motion[1]))
+        self.wait()
+        # TODO: explain the different terms?
+
+        # Step three: equate coefficients to find natural frequency and damping ratio
+
+        # Step four:
