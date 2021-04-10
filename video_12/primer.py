@@ -54,7 +54,7 @@ class VibPrimer(Scene):
         newton_law = MathTex(
             '\\Sigma F = m\\ddot{x}',
             '\\Sigma M = I\\ddot{\\theta}'
-        ).scale(0.5).next_to(step1_tex, DOWN, aligned_edge=LEFT)
+        ).scale(0.6).next_to(step1_tex, DOWN, aligned_edge=LEFT)
         newton_law[1].next_to(newton_law[0], RIGHT, buff=1)
         self.play(Write(newton_law[0]))
         self.wait()
@@ -72,14 +72,45 @@ class VibPrimer(Scene):
         eq_motion = MathTex(
             '\\ddot{x} + 2\\zeta \\omega_n\\dot{x} + \\omega_n^2 x = 0',
             '\\ddot{\\theta} + 2\\zeta \\omega_n\\dot{\\theta} + \\omega_n^2 \\theta = 0'
-        ).scale(0.5).next_to(step2_tex, DOWN, aligned_edge=LEFT)
+        ).scale(0.6).next_to(step2_tex, DOWN, aligned_edge=LEFT)
         eq_motion[1].next_to(eq_motion[0], RIGHT, buff=1)
         self.play(Write(eq_motion[0]))
         self.wait()
         self.play(Write(eq_motion[1]))
         self.wait()
-        # TODO: explain the different terms?
 
         # Step three: equate coefficients to find natural frequency and damping ratio
+        step3_tex = Tex(
+            '\\textbf{Step 3:}',
+            ' Equate coefficients to find $\\omega_n$ and $\\zeta$',
+            color=YELLOW
+        ).scale(0.6).next_to(eq_motion, DOWN, aligned_edge=LEFT)
+        natfreq = Tex('$\\omega_n$ is the natural frequency').scale(0.6).next_to(step3_tex, DOWN, aligned_edge=LEFT).shift(0.5*RIGHT)
+        zeta = Tex('$\\zeta$ is the damping ratio').scale(0.6).next_to(natfreq, DOWN, aligned_edge=LEFT)
+        self.play(Write(step3_tex))
+        self.wait()
+        self.play(Write(natfreq))
+        self.wait()
+        self.play(Write(zeta))
+        self.wait()
 
-        # Step four:
+        # Step four: pick the right general solution and use initial conditions to find the response function
+        step4_tex = Tex(
+            '\\small\\textbf{Step 4:}',
+            ' Pick the appropriate general solution, and use initial conditions to solve',
+            color=YELLOW
+        ).scale(0.66).next_to(Group(step3_tex, zeta), DOWN, aligned_edge=LEFT)
+        # Used \small to prevent automatic line break
+        general_solutions1 = Tex(
+            'No damping: $x = A\\cos (\\omega_n t) + B\\sin (\\omega_nt)$ or $x = C\\sin(\\omega_n t + \\psi)$'
+        ).scale(0.6).next_to(step4_tex, DOWN, aligned_edge=LEFT).shift(0.5*RIGHT)
+        general_solutions2 = Tex(
+            'Damping: $x = Ce^{-\\zeta\\omega_n t} \\sin (\\omega_dt + \\psi)$ where $\\omega_d = \\omega_n\\sqrt{1-\\zeta^2}$',
+        ).scale(0.6).next_to(general_solutions1, DOWN, aligned_edge=LEFT)
+        self.play(Write(step4_tex))
+        self.wait()
+        self.play(Write(general_solutions1))
+        self.wait()
+        self.play(Write(general_solutions2))
+        self.wait()
+
