@@ -42,7 +42,6 @@ class T12P2(Scene):
         attribution = Tex('Robin Liu, 2021', color=MED_DARK_GREY).scale(0.4).to_corner(DOWN+RIGHT, buff=0.2)
         self.add(attribution)
 
-        #region Diagram objects
         block = Rectangle(
             width=2.5,
             height=1,
@@ -115,6 +114,171 @@ class T12P2(Scene):
         )
         self.add(diagram)
         self.wait()
+
+        self.play(Transform(diagram, diagram.copy().to_edge(RIGHT, buff=1)))
+        self.play(
+            FadeOut(spring),
+            FadeOut(damper),
+            FadeOut(ground_up),
+            FadeOut(ground_down)
+        )
+        self.wait()
+
+        y_baseline = Line(
+            start=block.get_edge_center(LEFT),
+            end=block.get_edge_center(LEFT)+0.5*LEFT,
+            color=GREEN
+        ).shift(0.2*LEFT)
+        y_arrow = Arrow(
+            start=y_baseline.get_center(),
+            end=y_baseline.get_center() + DOWN,
+            color=GREEN,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.15,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        y_label = MathTex('+y', color=GREEN).scale(0.6).next_to(y_arrow, DOWN, buff=0.15)
+        self.play(
+            FadeIn(y_baseline)
+        )
+        self.play(
+            Write(y_arrow),
+            Write(y_label)
+        )
+        self.wait()
+
+        spring_arrow = Arrow(
+            start=block.get_edge_center(UP),
+            end=block.get_edge_center(UP)+1.5*UP,
+            color=RED,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.15,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        spring_annot = MathTex('F_s = ky', color=RED).scale(0.6).next_to(spring_arrow, UP, buff=0.15)
+        damper_arrow = Arrow(
+            start=block.get_edge_center(DOWN),
+            end=block.get_edge_center(DOWN)+1.5*DOWN,
+            color=PURPLE,
+            buff=0.0,
+            stroke_width=5,
+            tip_length=0.15,
+            max_stroke_width_to_length_ratio=999,
+            max_tip_length_to_length_ratio=1
+        )
+        damper_annot = MathTex('F_d = -C\\dot{y}', color=PURPLE).scale(0.6).next_to(damper_arrow, DOWN, buff=0.15)
+        self.play(
+            Write(spring_arrow),
+            Write(spring_annot),
+            Write(damper_arrow),
+            Write(damper_annot)
+        )
+        self.wait()
+
+        # Givens
+        y0 = MathTex('y_0=0').scale(0.6).to_corner(UP+LEFT, buff=0.5)
+        ydot0 = MathTex('\\dot{y}_0=-v').scale(0.6).next_to(y0, RIGHT, buff=1)
+        self.play(Write(y0))
+        self.wait()
+        self.play(Write(ydot0))
+        self.wait()
+
+        # dynamic equation
+        fsum = MathTex(
+            '-ky - C\\dot{y} = M\\ddot{y}'
+        ).scale(0.6).next_to(y0, DOWN, aligned_edge=LEFT)
+        fsum_rearr = MathTex(
+            '\\ddot{y} + \\frac{C}{M}\\dot{y} + \\frac{k}{M}y = 0'
+        ).scale(0.6).next_to(fsum, DOWN, aligned_edge=LEFT)
+        self.play(Write(fsum))
+        self.wait()
+        self.play(ReplacementTransform(fsum.copy(), fsum_rearr))
+        self.wait()
+
+        gen_vib_eq = MathTex(
+            '\\ddot{y} + 2\\zeta \\omega_n\\dot{y} + \\omega_n^2 y = 0',
+            color=YELLOW
+        ).scale(0.6).next_to(fsum_rearr, RIGHT, buff=1)
+        self.play(Write(gen_vib_eq))
+        self.wait()
+
+        omega_solve = MathTex(
+            '\\omega_n^2 = \\frac{k}{M}',
+            '\\Rightarrow',
+            '\\omega_n = 9.258\\,\\mathrm{rad/s}'
+        ).scale(0.6).next_to(fsum_rearr, DOWN, aligned_edge=LEFT)
+        self.play(Write(omega_solve[0]))
+        self.wait()
+        self.play(Write(omega_solve[1:]))
+        self.wait()
+        zeta_solve = MathTex(
+            '2\\zeta \\omega_n = \\frac{C}{M}',
+            '\\Rightarrow',
+            '\\zeta = 0.386'
+        ).scale(0.6).next_to(omega_solve, RIGHT, buff=1)
+        self.play(Write(zeta_solve[0]))
+        self.wait()
+        self.play(Write(zeta_solve[1:]))
+        self.wait()
+
+        general_solution = MathTex(
+            'y = Ae^{-\\zeta\\omega_n t} \\sin (\\omega_dt + \\psi)',
+            color=YELLOW
+        ).scale(0.6).next_to(omega_solve, DOWN, aligned_edge=LEFT)
+        damped_natfreq = MathTex(
+            '\\omega_d = \\omega_n\\sqrt{1-\\zeta^2}',
+            color=YELLOW
+        ).scale(0.6).next_to(general_solution, RIGHT, buff=1)
+        self.play(Write(general_solution))
+        self.play(Write(damped_natfreq))
+        self.wait()
+
+        omega_damped = MathTex(
+            '\\omega_d = 8.54\\,\\mathrm{rad/s}'
+        ).scale(0.6).next_to(general_solution, DOWN, aligned_edge=LEFT)
+        self.play(Write(omega_damped))
+        self.wait()
+
+        general_solution_0 = MathTex(
+            'y(0) = y_0 = A \\sin (\\psi)'
+        ).scale(0.6).next_to(omega_damped, DOWN, aligned_edge=LEFT)
+        general_solution_d0 = MathTex(
+            '\\dot{y}(0) = \\dot{y}_0 =',
+            'A(-\\zeta\\omega_n) \\sin(\\psi)',
+            '+',
+            'A\\omega_d \\cos(\\psi)'
+        ).scale(0.6).next_to(general_solution_0, DOWN, aligned_edge=LEFT)
+        self.play(Write(general_solution_0))
+        self.number_equation(general_solution_0, 1)
+        self.wait()
+        self.play(Write(general_solution_d0))
+        self.number_equation(general_solution_d0, 2)
+        self.wait()
+
+        ans_A = MathTex(
+            'A=-0.0702\\,\\mathrm{m}'
+        ).scale(0.6).next_to(general_solution_d0, DOWN, aligned_edge=LEFT)
+        ans_psi = MathTex(
+            '\\psi = 0\\,\\mathrm{rad}'
+        ).scale(0.6).next_to(ans_A, RIGHT, buff=1)
+        self.play(
+            Write(ans_A),
+            Write(ans_psi)
+        )
+        self.wait()
+
+        ans = MathTex(
+            'y(t) = -0.0702e^{-3.57 t} \\sin (8.54t)'
+        ).scale(0.6).next_to(ans_A, DOWN, aligned_edge=LEFT).shift(0.15*DOWN + 0.15*RIGHT)
+        ansbox = SurroundingRectangle(ans, buff=0.15)
+        self.play(Write(ans))
+        self.play(Create(ansbox))
+        self.wait()
+
 
 def generate_spring(start=LEFT, end=RIGHT, num_coils=5.5, radius=0.15, parallax_factor=0.5):
     '''
