@@ -9,9 +9,6 @@ BROWN = '#8f4a04'
 MED_DARK_GREY = '#666666'
 BLUE_E_DARK = '#0c343d'
 
-BALL_RADIUS = 0.75
-BALL_HEIGHT = 2
-BALL_OFFSET = 0.5
 
 class T12P1(Scene):
     def number_equation(self, eq, n, color=YELLOW_B):
@@ -291,7 +288,7 @@ class T12P1(Scene):
 
         #endregion
 
-def generate_spring(start=LEFT, end=RIGHT, num_coils=10, radius=0.15):
+def generate_spring(start=LEFT, end=RIGHT, num_coils=5.5, radius=0.15, parallax_factor=0.5):
     '''
     Create a VMObject that resembles a spring.
 
@@ -306,7 +303,6 @@ def generate_spring(start=LEFT, end=RIGHT, num_coils=10, radius=0.15):
     # transformation of a spring from one position to another
     # would not be 1:1 and it wouldn't look right.
     points_per_coil = 30
-    parallax_factor = 0.5 # between 0 and 1.
 
     num_subpoints = int(num_coils * points_per_coil)
 
