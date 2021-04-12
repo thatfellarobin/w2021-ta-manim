@@ -102,15 +102,33 @@ class VibPrimer(Scene):
         ).scale(0.66).next_to(Group(step3_tex, zeta), DOWN, aligned_edge=LEFT)
         # Used \small to prevent automatic line break
         general_solutions1 = Tex(
-            'No damping: $x = A\\cos (\\omega_n t) + B\\sin (\\omega_nt)$ or $x = C\\sin(\\omega_n t + \\psi)$'
+            'No damping ($\\zeta=0$): $x = A\\cos (\\omega_n t) + B\\sin (\\omega_nt)$ or $x = C\\sin(\\omega_n t + \\psi)$'
         ).scale(0.6).next_to(step4_tex, DOWN, aligned_edge=LEFT).shift(0.5*RIGHT)
         general_solutions2 = Tex(
-            'Damping: $x = Ce^{-\\zeta\\omega_n t} \\sin (\\omega_dt + \\psi)$ where $\\omega_d = \\omega_n\\sqrt{1-\\zeta^2}$',
+            'Underdamping ($0<\\zeta<1$): $x = Ce^{-\\zeta\\omega_n t} \\sin (\\omega_dt + \\psi)$ where $\\omega_d = \\omega_n\\sqrt{1-\\zeta^2}$',
         ).scale(0.6).next_to(general_solutions1, DOWN, aligned_edge=LEFT)
+        general_solutions3 = Tex(
+            'Critical or overdamping ($1\\le\\zeta$): solve the \\textit{characteristic equation}:',
+        ).scale(0.6).next_to(general_solutions2, DOWN, aligned_edge=LEFT)
+        characteristic_equation = MathTex(
+            '\\lambda^2 + 2\\zeta\\omega_n\\lambda + \\omega_n^2'
+        ).scale(0.6).next_to(general_solutions3, DOWN, aligned_edge=LEFT).shift(0.5*RIGHT)
+        general_solutions3_2 = Tex(
+            'for $\\lambda_1$ and $\\lambda_2$,',
+        ).scale(0.6).next_to(characteristic_equation, RIGHT, buff=0.25)
+        general_solutions3_3 = Tex(
+            'then use $x = A_1e^{\\lambda_1 t} + A_2e^{\\lambda_2 t}$',
+        ).scale(0.6).next_to(characteristic_equation, DOWN, aligned_edge=LEFT)
         self.play(Write(step4_tex))
         self.wait()
         self.play(Write(general_solutions1))
         self.wait()
         self.play(Write(general_solutions2))
+        self.wait()
+        self.play(Write(general_solutions3))
+        self.play(Write(characteristic_equation))
+        self.play(Write(general_solutions3_2))
+        self.wait(0.5)
+        self.play(Write(general_solutions3_3))
         self.wait()
 
