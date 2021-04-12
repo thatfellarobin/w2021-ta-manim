@@ -111,7 +111,7 @@ class VibPrimer(Scene):
             'Critical or overdamping ($1\\le\\zeta$): solve the \\textit{characteristic equation}:',
         ).scale(0.6).next_to(general_solutions2, DOWN, aligned_edge=LEFT)
         characteristic_equation = MathTex(
-            '\\lambda^2 + 2\\zeta\\omega_n\\lambda + \\omega_n^2'
+            '\\lambda^2 + 2\\zeta\\omega_n\\lambda + \\omega_n^2 = 0'
         ).scale(0.6).next_to(general_solutions3, DOWN, aligned_edge=LEFT).shift(0.5*RIGHT)
         general_solutions3_2 = Tex(
             'for $\\lambda_1$ and $\\lambda_2$,',
